@@ -16,7 +16,9 @@ let siteContent = {
     subheadline_th: "บริการซ่อมมอเตอร์อุตสาหกรรมที่เชื่อถือได้ในชลบุรีและพัทยา ซ่อมเสร็จไว มั่นใจในคุณภาพ",
     phone: "+66 94 260 8244",
     bgImage: "https://picsum.photos/seed/factory/1920/1080",
-    logo: ""
+    logo: "",
+    companyName: "BIG ELECTRICMOTOR",
+    companyNameShort: "BIG MOTOR"
   },
   stats: {
     yearsExperience: "10",

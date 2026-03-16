@@ -183,6 +183,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       <label className="block text-sm font-medium text-slate-700 mb-1">Company Logo URL</label>
                       <input type="text" value={content.hero?.logo || ''} onChange={(e) => handleChange('hero', 'logo', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="Leave empty to use default text logo" />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Company Name (Desktop)</label>
+                      <input type="text" value={content.hero?.companyName || ''} onChange={(e) => handleChange('hero', 'companyName', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="BIG ELECTRICMOTOR" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Company Name (Mobile/Short)</label>
+                      <input type="text" value={content.hero?.companyNameShort || ''} onChange={(e) => handleChange('hero', 'companyNameShort', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="BIG MOTOR" />
+                    </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-slate-700 mb-1">Hero Background Image URL</label>
                       <input type="text" value={content.hero?.bgImage || ''} onChange={(e) => handleChange('hero', 'bgImage', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://..." />

@@ -159,6 +159,9 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const companyName = siteContent?.hero?.companyName || 'BIG ELECTRICMOTOR';
+  const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
+
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       {/* Top Bar */}
@@ -194,12 +197,18 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             {siteContent?.hero?.logo ? (
-              <img src={siteContent.hero.logo} alt="Company Logo" className="h-12 object-contain" referrerPolicy="no-referrer" />
+              <div className="flex items-center">
+                <img src={siteContent.hero.logo} alt="Company Logo" className="h-12 object-contain mr-3" referrerPolicy="no-referrer" />
+                <div className="text-2xl font-bold text-slate-900 flex items-center">
+                  <span className="hidden sm:block lg:hidden xl:block">{companyName}</span>
+                  <span className="block sm:hidden lg:block xl:hidden">{companyNameShort}</span>
+                </div>
+              </div>
             ) : (
               <div className="text-2xl font-bold text-slate-900 flex items-center">
                 <Zap className="w-8 h-8 text-orange-500 mr-2" />
-                <span className="hidden sm:block lg:hidden xl:block">BIG ELECTRICMOTOR</span>
-                <span className="block sm:hidden lg:block xl:hidden">BIG MOTOR</span>
+                <span className="hidden sm:block lg:hidden xl:block">{companyName}</span>
+                <span className="block sm:hidden lg:block xl:hidden">{companyNameShort}</span>
               </div>
             )}
           </div>
@@ -971,6 +980,7 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
   const { lang } = useContext(LanguageContext);
   
   const description = lang === 'th' && siteContent?.footer?.description_th ? siteContent.footer.description_th : (siteContent?.footer?.description || 'Professional electric motor repair and rewinding service in Chon Buri and Pattaya. Quality guaranteed.');
+  const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
 
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-8">
@@ -979,11 +989,14 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
           <div>
             <div className="flex items-center mb-6">
               {siteContent?.hero?.logo ? (
-                <img src={siteContent.hero.logo} alt="Company Logo" className="h-10 object-contain bg-white p-1 rounded" referrerPolicy="no-referrer" />
+                <div className="flex items-center">
+                  <img src={siteContent.hero.logo} alt="Company Logo" className="h-10 object-contain bg-white p-1 rounded mr-3" referrerPolicy="no-referrer" />
+                  <span className="text-2xl font-bold text-white">{companyNameShort}</span>
+                </div>
               ) : (
                 <div className="text-2xl font-bold text-white flex items-center">
                   <Zap className="w-6 h-6 text-orange-500 mr-2" />
-                  BIG MOTOR
+                  {companyNameShort}
                 </div>
               )}
             </div>
