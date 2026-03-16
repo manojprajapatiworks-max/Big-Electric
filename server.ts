@@ -33,6 +33,19 @@ let siteContent = {
     description_th: "บริการซ่อมและพันขดลวดมอเตอร์ไฟฟ้าระดับมืออาชีพในชลบุรีและพัทยา เราช่วยให้ธุรกิจของคุณขับเคลื่อนต่อไป",
     facebook: "https://facebook.com"
   },
+  services: [
+    { title: "Electric Motor Repair", desc: "Comprehensive diagnostics and repair for all types of electric motors." },
+    { title: "Motor Rewinding", desc: "High-quality copper rewinding to restore motor efficiency and lifespan." },
+    { title: "Pump Motor Repair", desc: "Specialized repair services for industrial water and chemical pumps." },
+    { title: "Generator Motor Repair", desc: "Maintenance and repair for backup and continuous power generators." },
+    { title: "Industrial Maintenance", desc: "Preventative maintenance programs to minimize factory downtime." },
+    { title: "AC/DC Motor Service", desc: "Expert service for both alternating and direct current motors." }
+  ],
+  blogs: [
+    { title: "Signs Your Electric Motor Needs Rewinding", category: "Maintenance", date: "Oct 12, 2026", image: "https://picsum.photos/seed/motor1/800/600", desc: "Learn the top 5 warning signs that indicate your industrial motor requires professional rewinding before a complete failure occurs." },
+    { title: "How to Extend the Lifespan of Industrial Pumps", category: "Tips & Tricks", date: "Sep 28, 2026", image: "https://picsum.photos/seed/pump2/800/600", desc: "Simple preventative maintenance steps you can take to ensure your water and chemical pumps operate efficiently for years." },
+    { title: "Understanding AC vs DC Motor Repairs", category: "Education", date: "Sep 15, 2026", image: "https://picsum.photos/seed/repair3/800/600", desc: "A comprehensive guide to the differences in diagnosing and repairing alternating current versus direct current electric motors." }
+  ],
   trackingIds: [
     { id: "EMS-000245", status: "Rewinding", completionDate: "Oct 24, 2026" }
   ]

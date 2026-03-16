@@ -6,6 +6,7 @@ import {
   ArrowRight, Star, Factory, Cpu, PenTool,
   Truck, ClipboardList, MessageSquare, Check
 } from 'lucide-react';
+import AdminPanel from './components/AdminPanel';
 
 const SiteContext = createContext<any>(null);
 
@@ -123,6 +124,10 @@ const t = (key: string, lang: Language) => {
     'Tracking ID not found.': { en: 'Tracking ID not found.', th: 'ไม่พบรหัสติดตาม' },
     'Please check the ID and try again.': { en: 'Please check the ID and try again.', th: 'โปรดตรวจสอบรหัสและลองอีกครั้ง' },
     'Language': { en: 'Language', th: 'ภาษา' },
+    'Admin Login': { en: 'Admin Login', th: 'เข้าสู่ระบบผู้ดูแลระบบ' },
+    'Email': { en: 'Email', th: 'อีเมล' },
+    'Password': { en: 'Password', th: 'รหัสผ่าน' },
+    'Login': { en: 'Login', th: 'เข้าสู่ระบบ' },
   };
   return dict[key] ? dict[key][lang] : key;
 };
@@ -384,13 +389,23 @@ const TrustSection = () => {
 
 const Services = () => {
   const { lang } = useContext(LanguageContext);
-  const servicesList = [
-    { title: "Electric Motor Repair", icon: <Wrench className="w-8 h-8" />, desc: "Comprehensive diagnostics and repair for all types of electric motors." },
-    { title: "Motor Rewinding", icon: <Activity className="w-8 h-8" />, desc: "High-quality copper rewinding to restore motor efficiency and lifespan." },
-    { title: "Pump Motor Repair", icon: <Settings className="w-8 h-8" />, desc: "Specialized repair services for industrial water and chemical pumps." },
-    { title: "Generator Motor Repair", icon: <Zap className="w-8 h-8" />, desc: "Maintenance and repair for backup and continuous power generators." },
-    { title: "Industrial Maintenance", icon: <Factory className="w-8 h-8" />, desc: "Preventative maintenance programs to minimize factory downtime." },
-    { title: "AC/DC Motor Service", icon: <Cpu className="w-8 h-8" />, desc: "Expert service for both alternating and direct current motors." }
+  const siteContent = useContext(SiteContext);
+  const icons = [
+    <Wrench className="w-8 h-8" />,
+    <Activity className="w-8 h-8" />,
+    <Settings className="w-8 h-8" />,
+    <Zap className="w-8 h-8" />,
+    <Factory className="w-8 h-8" />,
+    <Cpu className="w-8 h-8" />
+  ];
+  
+  const servicesList = siteContent?.services || [
+    { title: "Electric Motor Repair", desc: "Comprehensive diagnostics and repair for all types of electric motors." },
+    { title: "Motor Rewinding", desc: "High-quality copper rewinding to restore motor efficiency and lifespan." },
+    { title: "Pump Motor Repair", desc: "Specialized repair services for industrial water and chemical pumps." },
+    { title: "Generator Motor Repair", desc: "Maintenance and repair for backup and continuous power generators." },
+    { title: "Industrial Maintenance", desc: "Preventative maintenance programs to minimize factory downtime." },
+    { title: "AC/DC Motor Service", desc: "Expert service for both alternating and direct current motors." }
   ];
 
   return (
@@ -405,7 +420,7 @@ const Services = () => {
           {servicesList.map((service, idx) => (
             <div key={idx} className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition border border-slate-100 group">
               <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500 group-hover:text-white transition">
-                {service.icon}
+                {icons[idx % icons.length]}
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{t(service.title, lang)}</h3>
               <p className="text-slate-600 mb-6 line-clamp-2">{t(service.desc, lang)}</p>
@@ -786,7 +801,8 @@ const Gallery = () => {
 
 const Blog = () => {
   const { lang } = useContext(LanguageContext);
-  const posts = [
+  const siteContent = useContext(SiteContext);
+  const posts = siteContent?.blogs || [
     { title: "Electric Motor Overheating Causes", img: "https://picsum.photos/seed/heat/600/400", date: "Oct 12, 2026" },
     { title: "Motor Rewinding Process Explained", img: "https://picsum.photos/seed/wire/600/400", date: "Sep 28, 2026" },
     { title: "Industrial Motor Maintenance Tips", img: "https://picsum.photos/seed/maint/600/400", date: "Sep 15, 2026" }
@@ -805,7 +821,7 @@ const Blog = () => {
             <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
               <div className="aspect-video overflow-hidden">
                 <img 
-                  src={post.img} 
+                  src={post.image || post.img} 
                   alt={t(post.title, lang)} 
                   className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
                   referrerPolicy="no-referrer"
@@ -941,7 +957,7 @@ const MapSection = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
   const siteContent = useContext(SiteContext);
   const { lang } = useContext(LanguageContext);
   
@@ -1024,6 +1040,7 @@ const Footer = () => {
           <div className="flex space-x-4 mt-4 md:mt-0 text-sm">
             <a href="#" className="hover:text-white transition">{t('Privacy Policy', lang)}</a>
             <a href="#" className="hover:text-white transition">{t('Terms of Service', lang)}</a>
+            <button onClick={onOpenAdminLogin} className="hover:text-white transition">{t('Admin Login', lang)}</button>
           </div>
         </div>
       </div>
@@ -1048,9 +1065,95 @@ const FloatingButtons = () => {
   );
 };
 
+const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean, onClose: () => void, onLoginSuccess: (token: string) => void }) => {
+  const { lang } = useContext(LanguageContext);
+  const [username, setUsername] = useState('Bigelectricmotoradmin');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (!res.ok) {
+        throw new Error('Invalid credentials');
+      }
+      
+      const data = await res.json();
+      onLoginSuccess(data.token);
+      onClose();
+    } catch (err) {
+      setError(lang === 'en' ? 'Invalid credentials' : 'ข้อมูลรับรองไม่ถูกต้อง');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
+          <h3 className="text-xl font-bold flex items-center">
+            <Zap className="w-5 h-5 text-orange-500 mr-2" />
+            {t('Admin Login', lang)}
+          </h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="p-6">
+          <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('Username', lang)}</label>
+              <input 
+                type="text" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('Password', lang)}</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                required
+              />
+            </div>
+            <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition mt-4 disabled:opacity-50">
+              {loading ? '...' : t('Login', lang)}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [siteContent, setSiteContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
+  const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem('adminToken'));
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
     return (saved === 'en' || saved === 'th') ? saved : 'en';
@@ -1079,6 +1182,20 @@ export default function App() {
     </div>;
   }
 
+  if (adminToken) {
+    return (
+      <AdminPanel 
+        token={adminToken} 
+        siteContent={siteContent} 
+        onUpdateContent={setSiteContent} 
+        onLogout={() => {
+          localStorage.removeItem('adminToken');
+          setAdminToken(null);
+        }} 
+      />
+    );
+  }
+
   return (
     <LanguageContext.Provider value={{lang, setLang}}>
       <SiteContext.Provider value={siteContent}>
@@ -1098,8 +1215,16 @@ export default function App() {
             <Contact />
             <MapSection />
           </main>
-          <Footer />
+          <Footer onOpenAdminLogin={() => setIsAdminLoginOpen(true)} />
           <FloatingButtons />
+          <AdminLoginModal 
+            isOpen={isAdminLoginOpen} 
+            onClose={() => setIsAdminLoginOpen(false)} 
+            onLoginSuccess={(token) => {
+              localStorage.setItem('adminToken', token);
+              setAdminToken(token);
+            }}
+          />
         </div>
       </SiteContext.Provider>
     </LanguageContext.Provider>
