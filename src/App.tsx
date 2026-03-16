@@ -163,10 +163,22 @@ const Header = () => {
             <span className="flex items-center"><Phone className="w-4 h-4 mr-2" /> {siteContent?.contact?.phone || '+66 94 260 8244'}</span>
             <span className="flex items-center"><MessageCircle className="w-4 h-4 mr-2" /> LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
           </div>
-          <div className="flex items-center space-x-4">
-            <button onClick={() => setLang(lang === 'en' ? 'th' : 'en')} className="flex items-center hover:text-orange-400 transition">
-              <Globe className="w-4 h-4 mr-1" /> {lang === 'en' ? 'EN | TH' : 'TH | EN'}
-            </button>
+          <div className="flex items-center space-x-2">
+            <Globe className="w-4 h-4 mr-1 text-slate-400" />
+            <div className="flex bg-slate-800 rounded-md p-0.5">
+              <button 
+                onClick={() => setLang('en')} 
+                className={`px-3 py-1 text-xs font-bold rounded-sm transition ${lang === 'en' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              >
+                EN
+              </button>
+              <button 
+                onClick={() => setLang('th')} 
+                className={`px-3 py-1 text-xs font-bold rounded-sm transition ${lang === 'th' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              >
+                TH
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -178,13 +190,13 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <div className="text-2xl font-bold text-slate-900 flex items-center">
               <Zap className="w-8 h-8 text-orange-500 mr-2" />
-              <span className="hidden sm:block">BIG ELECTRICMOTOR</span>
-              <span className="sm:hidden">BIG MOTOR</span>
+              <span className="hidden sm:block lg:hidden xl:block">BIG ELECTRICMOTOR</span>
+              <span className="block sm:hidden lg:block xl:hidden">BIG MOTOR</span>
             </div>
           </div>
 
           {/* Desktop Menu */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden lg:flex lg:space-x-4 xl:space-x-8">
             {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
               const sectionId = item.toLowerCase().replace(' ', '-');
               const isActive = activeSection === sectionId;
@@ -192,7 +204,7 @@ const Header = () => {
               <a 
                 key={item} 
                 href={`#${sectionId}`} 
-                className={`font-medium transition ${isActive ? 'text-orange-500' : 'text-slate-700 hover:text-orange-500'}`}
+                className={`font-medium transition text-sm xl:text-base ${isActive ? 'text-orange-500' : 'text-slate-700 hover:text-orange-500'}`}
               >
                 {t(item, lang)}
               </a>
@@ -200,7 +212,7 @@ const Header = () => {
           </nav>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
             <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center text-slate-900 font-bold hover:text-orange-500 transition">
               <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}
             </a>
@@ -210,7 +222,7 @@ const Header = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-700 hover:text-orange-500">
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -220,7 +232,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t">
+        <div className="lg:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
               const sectionId = item.toLowerCase().replace(' ', '-');
