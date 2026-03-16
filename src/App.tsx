@@ -122,14 +122,37 @@ const t = (key: string, lang: Language) => {
     'e.g. EMS-000245': { en: 'e.g. EMS-000245', th: 'เช่น EMS-000245' },
     'Tracking ID not found.': { en: 'Tracking ID not found.', th: 'ไม่พบรหัสติดตาม' },
     'Please check the ID and try again.': { en: 'Please check the ID and try again.', th: 'โปรดตรวจสอบรหัสและลองอีกครั้ง' },
+    'Language': { en: 'Language', th: 'ภาษา' },
   };
   return dict[key] ? dict[key][lang] : key;
 };
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const siteContent = useContext(SiteContext);
   const { lang, setLang } = useContext(LanguageContext);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'services', 'booking', 'repair-status', 'blog', 'contact'];
+      let current = 'home';
+      
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 150) {
+            current = section;
+          }
+        }
+      }
+      setActiveSection(current);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -162,11 +185,18 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex space-x-8">
-            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-slate-700 hover:text-orange-500 font-medium transition">
+            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
+              const sectionId = item.toLowerCase().replace(' ', '-');
+              const isActive = activeSection === sectionId;
+              return (
+              <a 
+                key={item} 
+                href={`#${sectionId}`} 
+                className={`font-medium transition ${isActive ? 'text-orange-500' : 'text-slate-700 hover:text-orange-500'}`}
+              >
                 {t(item, lang)}
               </a>
-            ))}
+            )})}
           </nav>
 
           {/* CTA Buttons */}
@@ -192,12 +222,37 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="block px-3 py-2 text-base font-medium text-slate-700 hover:text-orange-500 hover:bg-slate-50">
+            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
+              const sectionId = item.toLowerCase().replace(' ', '-');
+              const isActive = activeSection === sectionId;
+              return (
+              <a 
+                key={item} 
+                href={`#${sectionId}`} 
+                onClick={() => setIsMenuOpen(false)}
+                className={`block px-3 py-2 text-base font-medium rounded-md transition ${isActive ? 'text-orange-500 bg-orange-50' : 'text-slate-700 hover:text-orange-500 hover:bg-slate-50'}`}
+              >
                 {t(item, lang)}
               </a>
-            ))}
-            <div className="mt-4 px-3 flex flex-col space-y-2">
+            )})}
+            <div className="mt-4 px-3 flex flex-col space-y-2 border-t pt-4">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <span className="text-sm font-medium text-slate-500 uppercase">{t('Language', lang)}</span>
+                <div className="flex space-x-2">
+                  <button 
+                    onClick={() => setLang('en')} 
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition ${lang === 'en' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  >
+                    EN
+                  </button>
+                  <button 
+                    onClick={() => setLang('th')} 
+                    className={`px-3 py-1 text-sm font-medium rounded-md transition ${lang === 'th' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  >
+                    TH
+                  </button>
+                </div>
+              </div>
               <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center justify-center w-full bg-slate-900 text-white px-4 py-2 rounded-md font-medium">
                 <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}: {siteContent?.contact?.phone || '+66 94 260 8244'}
               </a>
@@ -466,7 +521,7 @@ const WhyChooseUs = () => {
   ];
 
   return (
-    <section id="about" className="py-20 bg-white">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
