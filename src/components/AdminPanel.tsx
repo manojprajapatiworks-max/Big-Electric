@@ -41,7 +41,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     }
   };
 
-  const handleChange = (section: string, field: string, value: string) => {
+  const handleChange = (section: string, field: string, value: any) => {
+    if (field === '') {
+      setContent((prev: any) => ({
+        ...prev,
+        [section]: value
+      }));
+      return;
+    }
     setContent((prev: any) => ({
       ...prev,
       [section]: {
@@ -79,6 +86,8 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   const tabs = [
     { id: 'hero', label: 'Hero Section', icon: <LayoutTemplate className="w-4 h-4 mr-2" /> },
     { id: 'stats', label: 'Statistics', icon: <BarChart className="w-4 h-4 mr-2" /> },
+    { id: 'calculator', label: 'Calculator', icon: <Activity className="w-4 h-4 mr-2" /> },
+    { id: 'process', label: 'Repair Process', icon: <Wrench className="w-4 h-4 mr-2" /> },
     { id: 'contact', label: 'Contact Info', icon: <Phone className="w-4 h-4 mr-2" /> },
     { id: 'footer', label: 'Footer', icon: <LayoutPanelTop className="w-4 h-4 mr-2" /> },
     { id: 'services', label: 'Services', icon: <Wrench className="w-4 h-4 mr-2" /> },
@@ -204,18 +213,126 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Years Experience</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Years Experience Number</label>
                       <input type="text" value={content.stats?.yearsExperience || ''} onChange={(e) => handleChange('stats', 'yearsExperience', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Motors Repaired</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Motors Repaired Number</label>
                       <input type="text" value={content.stats?.motorsRepaired || ''} onChange={(e) => handleChange('stats', 'motorsRepaired', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Industrial Clients</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Industrial Clients Number</label>
                       <input type="text" value={content.stats?.industrialClients || ''} onChange={(e) => handleChange('stats', 'industrialClients', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                     </div>
                   </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Years Experience Label (EN)</label>
+                      <input type="text" value={content.stats?.yearsExperienceLabel || ''} onChange={(e) => handleChange('stats', 'yearsExperienceLabel', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Years Experience Label (TH)</label>
+                      <input type="text" value={content.stats?.yearsExperienceLabel_th || ''} onChange={(e) => handleChange('stats', 'yearsExperienceLabel_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Motors Repaired Label (EN)</label>
+                      <input type="text" value={content.stats?.motorsRepairedLabel || ''} onChange={(e) => handleChange('stats', 'motorsRepairedLabel', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Motors Repaired Label (TH)</label>
+                      <input type="text" value={content.stats?.motorsRepairedLabel_th || ''} onChange={(e) => handleChange('stats', 'motorsRepairedLabel_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Industrial Clients Label (EN)</label>
+                      <input type="text" value={content.stats?.industrialClientsLabel || ''} onChange={(e) => handleChange('stats', 'industrialClientsLabel', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Industrial Clients Label (TH)</label>
+                      <input type="text" value={content.stats?.industrialClientsLabel_th || ''} onChange={(e) => handleChange('stats', 'industrialClientsLabel_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* CALCULATOR SECTION */}
+              {activeTab === 'calculator' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Title (EN)</label>
+                      <input type="text" value={content.calculator?.title || ''} onChange={(e) => handleChange('calculator', 'title', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Title (TH)</label>
+                      <input type="text" value={content.calculator?.title_th || ''} onChange={(e) => handleChange('calculator', 'title_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Description (EN)</label>
+                      <textarea value={content.calculator?.description || ''} onChange={(e) => handleChange('calculator', 'description', e.target.value)} rows={3} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Description (TH)</label>
+                      <textarea value={content.calculator?.description_th || ''} onChange={(e) => handleChange('calculator', 'description_th', e.target.value)} rows={3} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Features (EN) - Comma separated</label>
+                      <textarea value={(content.calculator?.features || []).join(', ')} onChange={(e) => handleChange('calculator', 'features', e.target.value.split(',').map((s: string) => s.trim()))} rows={3} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Features (TH) - Comma separated</label>
+                      <textarea value={(content.calculator?.features_th || []).join(', ')} onChange={(e) => handleChange('calculator', 'features_th', e.target.value.split(',').map((s: string) => s.trim()))} rows={3} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PROCESS SECTION */}
+              {activeTab === 'process' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-slate-900">Repair Process Steps</h3>
+                    <button onClick={() => {
+                      const newProcess = [...(content.process || [])];
+                      newProcess.push({ title: 'New Step', title_th: '', desc: 'Description', desc_th: '' });
+                      handleChange('process', '', newProcess);
+                    }} className="flex items-center text-sm bg-orange-500 text-white px-3 py-1.5 rounded hover:bg-orange-600 transition">
+                      <Plus className="w-4 h-4 mr-1" /> Add Step
+                    </button>
+                  </div>
+                  
+                  {(content.process || []).map((step: any, index: number) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm relative">
+                      <button 
+                        onClick={() => {
+                          const newProcess = [...content.process];
+                          newProcess.splice(index, 1);
+                          handleChange('process', '', newProcess);
+                        }}
+                        className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Title (EN)</label>
+                          <input type="text" value={step.title || ''} onChange={(e) => handleArrayChange('process', index, 'title', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Title (TH)</label>
+                          <input type="text" value={step.title_th || ''} onChange={(e) => handleArrayChange('process', index, 'title_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Description (EN)</label>
+                          <textarea value={step.desc || ''} onChange={(e) => handleArrayChange('process', index, 'desc', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-slate-700 mb-1">Description (TH)</label>
+                          <textarea value={step.desc_th || ''} onChange={(e) => handleArrayChange('process', index, 'desc_th', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 
@@ -250,6 +367,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-slate-700 mb-1">Google Map Link URL (Open in Maps button)</label>
                       <input type="text" value={content.contact?.mapLinkUrl || ''} onChange={(e) => handleChange('contact', 'mapLinkUrl', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://maps.google.com/?q=..." />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Map Button Text (EN)</label>
+                      <input type="text" value={content.contact?.mapButtonText || ''} onChange={(e) => handleChange('contact', 'mapButtonText', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="Open in Google Maps" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Map Button Text (TH)</label>
+                      <input type="text" value={content.contact?.mapButtonText_th || ''} onChange={(e) => handleChange('contact', 'mapButtonText_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="เปิดใน Google Maps" />
                     </div>
                   </div>
                 </div>
@@ -287,20 +412,28 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
-                      <div className="grid grid-cols-1 gap-4 pr-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
                         <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Service Title</label>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Service Title (EN)</label>
                           <input type="text" value={service.title || ''} onChange={(e) => handleArrayChange('services', idx, 'title', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Description</label>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Service Title (TH)</label>
+                          <input type="text" value={service.title_th || ''} onChange={(e) => handleArrayChange('services', idx, 'title_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Description (EN)</label>
                           <textarea value={service.desc || ''} onChange={(e) => handleArrayChange('services', idx, 'desc', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Description (TH)</label>
+                          <textarea value={service.desc_th || ''} onChange={(e) => handleArrayChange('services', idx, 'desc_th', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                       </div>
                     </div>
                   ))}
                   <button 
-                    onClick={() => addArrayItem('services', { title: 'New Service', desc: 'Service description' })}
+                    onClick={() => addArrayItem('services', { title: 'New Service', title_th: '', desc: 'Service description', desc_th: '' })}
                     className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:text-orange-600 hover:border-orange-500 hover:bg-orange-50 transition flex items-center justify-center font-medium"
                   >
                     <Plus className="w-5 h-5 mr-2" /> Add New Service
@@ -321,15 +454,23 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                         <Trash2 className="w-5 h-5" />
                       </button>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                        <div className="md:col-span-2">
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Blog Title</label>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Blog Title (EN)</label>
                           <input type="text" value={blog.title || ''} onChange={(e) => handleArrayChange('blogs', idx, 'title', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Category</label>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Blog Title (TH)</label>
+                          <input type="text" value={blog.title_th || ''} onChange={(e) => handleArrayChange('blogs', idx, 'title_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Category (EN)</label>
                           <input type="text" value={blog.category || ''} onChange={(e) => handleArrayChange('blogs', idx, 'category', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                         <div>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Category (TH)</label>
+                          <input type="text" value={blog.category_th || ''} onChange={(e) => handleArrayChange('blogs', idx, 'category_th', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
                           <label className="block text-xs font-medium text-slate-500 mb-1">Date</label>
                           <input type="text" value={blog.date || ''} onChange={(e) => handleArrayChange('blogs', idx, 'date', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
@@ -338,14 +479,18 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                           <input type="text" value={blog.image || blog.img || ''} onChange={(e) => handleArrayChange('blogs', idx, 'image', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Description</label>
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Description (EN)</label>
                           <textarea value={blog.desc || ''} onChange={(e) => handleArrayChange('blogs', idx, 'desc', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Description (TH)</label>
+                          <textarea value={blog.desc_th || ''} onChange={(e) => handleArrayChange('blogs', idx, 'desc_th', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
                       </div>
                     </div>
                   ))}
                   <button 
-                    onClick={() => addArrayItem('blogs', { title: 'New Blog Post', category: 'News', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), image: 'https://picsum.photos/seed/new/800/600', desc: 'Short description' })}
+                    onClick={() => addArrayItem('blogs', { title: 'New Blog Post', title_th: '', category: 'News', category_th: '', date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), image: 'https://picsum.photos/seed/new/800/600', desc: 'Short description', desc_th: '' })}
                     className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:text-orange-600 hover:border-orange-500 hover:bg-orange-50 transition flex items-center justify-center font-medium"
                   >
                     <Plus className="w-5 h-5 mr-2" /> Add New Blog Post

@@ -385,15 +385,15 @@ const TrustSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
           <div className="py-4">
             <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.yearsExperience || '10'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{t('Years Experience', lang)}</p>
+            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.yearsExperienceLabel_th ? siteContent.stats.yearsExperienceLabel_th : (siteContent?.stats?.yearsExperienceLabel || t('Years Experience', lang))}</p>
           </div>
           <div className="py-4">
             <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.motorsRepaired || '500'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{t('Motors Repaired', lang)}</p>
+            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.motorsRepairedLabel_th ? siteContent.stats.motorsRepairedLabel_th : (siteContent?.stats?.motorsRepairedLabel || t('Motors Repaired', lang))}</p>
           </div>
           <div className="py-4">
             <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.industrialClients || '200'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{t('Industrial Clients', lang)}</p>
+            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.industrialClientsLabel_th ? siteContent.stats.industrialClientsLabel_th : (siteContent?.stats?.industrialClientsLabel || t('Industrial Clients', lang))}</p>
           </div>
         </div>
       </div>
@@ -436,8 +436,8 @@ const Services = () => {
               <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500 group-hover:text-white transition">
                 {icons[idx % icons.length]}
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">{t(service.title, lang)}</h3>
-              <p className="text-slate-600 mb-6 line-clamp-2">{t(service.desc, lang)}</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">{lang === 'th' && service.title_th ? service.title_th : (t(service.title, lang) || service.title)}</h3>
+              <p className="text-slate-600 mb-6 line-clamp-2">{lang === 'th' && service.desc_th ? service.desc_th : (t(service.desc, lang) || service.desc)}</p>
               <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-orange-600 font-semibold flex items-center hover:text-orange-700 transition">
                 {t('Learn More', lang)} <ChevronRight className="w-4 h-4 ml-1" />
               </button>
@@ -451,6 +451,7 @@ const Services = () => {
 
 const Calculator = () => {
   const { lang } = useContext(LanguageContext);
+  const siteContent = useContext(SiteContext);
   const [result, setResult] = useState<{cost: string, time: string} | null>(null);
 
   const handleCalculate = (e: React.FormEvent) => {
@@ -462,6 +463,10 @@ const Calculator = () => {
     });
   };
 
+  const title = lang === 'th' && siteContent?.calculator?.title_th ? siteContent.calculator.title_th : (siteContent?.calculator?.title || t('Motor Rewinding Cost Calculator', lang));
+  const description = lang === 'th' && siteContent?.calculator?.description_th ? siteContent.calculator.description_th : (siteContent?.calculator?.description || t('Get an instant estimate for your motor rewinding or repair. Enter your motor specifications below to see estimated costs and turnaround times.', lang));
+  const features = lang === 'th' && siteContent?.calculator?.features_th ? siteContent.calculator.features_th : (siteContent?.calculator?.features || ['Transparent pricing structure', 'No hidden fees', 'Free detailed quotation available']);
+
   return (
     <section id="booking" className="py-20 bg-slate-900 text-white relative overflow-hidden">
       <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-orange-500 rounded-full opacity-10 blur-3xl"></div>
@@ -470,15 +475,15 @@ const Calculator = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('Motor Rewinding Cost Calculator', lang)}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{title}</h2>
             <p className="text-slate-300 text-lg mb-8">
-              {t('Get an instant estimate for your motor rewinding or repair. Enter your motor specifications below to see estimated costs and turnaround times.', lang)}
+              {description}
             </p>
             <ul className="space-y-4 mb-8">
-              {['Transparent pricing structure', 'No hidden fees', 'Free detailed quotation available'].map((item, i) => (
+              {features.map((item: string, i: number) => (
                 <li key={i} className="flex items-center text-slate-300">
                   <CheckCircle className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
-                  {t(item, lang)}
+                  {lang === 'th' ? item : t(item, lang)}
                 </li>
               ))}
             </ul>
@@ -604,12 +609,21 @@ const WhyChooseUs = () => {
 
 const Process = () => {
   const { lang } = useContext(LanguageContext);
-  const steps = [
-    { icon: <PenTool className="w-6 h-6" />, title: "Submit Service Request", desc: "Contact us via phone, LINE, or web form." },
-    { icon: <Search className="w-6 h-6" />, title: "Motor Inspection", desc: "Thorough diagnostic to identify the root cause." },
-    { icon: <Wrench className="w-6 h-6" />, title: "Repair or Rewinding", desc: "Expert repair using high-grade materials." },
-    { icon: <ShieldCheck className="w-6 h-6" />, title: "Testing & Quality Check", desc: "Rigorous testing to ensure optimal performance." },
-    { icon: <Truck className="w-6 h-6" />, title: "Delivery to Customer", desc: "Safe return of your fully functional motor." }
+  const siteContent = useContext(SiteContext);
+  const icons = [
+    <PenTool className="w-6 h-6" />,
+    <Search className="w-6 h-6" />,
+    <Wrench className="w-6 h-6" />,
+    <ShieldCheck className="w-6 h-6" />,
+    <Truck className="w-6 h-6" />
+  ];
+  
+  const steps = siteContent?.process || [
+    { title: "Submit Service Request", desc: "Contact us via phone, LINE, or web form." },
+    { title: "Motor Inspection", desc: "Thorough diagnostic to identify the root cause." },
+    { title: "Repair or Rewinding", desc: "Expert repair using high-grade materials." },
+    { title: "Testing & Quality Check", desc: "Rigorous testing to ensure optimal performance." },
+    { title: "Delivery to Customer", desc: "Safe return of your fully functional motor." }
   ];
 
   return (
@@ -625,16 +639,16 @@ const Process = () => {
           <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
           
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative z-10">
-            {steps.map((step, idx) => (
+            {steps.map((step: any, idx: number) => (
               <div key={idx} className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-full bg-white border-4 border-slate-100 shadow-md flex items-center justify-center text-orange-500 mb-4 relative">
-                  {step.icon}
+                  {icons[idx % icons.length]}
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-900 text-white rounded-full text-xs font-bold flex items-center justify-center">
                     {idx + 1}
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{t(step.title, lang)}</h3>
-                <p className="text-sm text-slate-600">{t(step.desc, lang)}</p>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{lang === 'th' && step.title_th ? step.title_th : (t(step.title, lang) || step.title)}</h3>
+                <p className="text-sm text-slate-600">{lang === 'th' && step.desc_th ? step.desc_th : (t(step.desc, lang) || step.desc)}</p>
               </div>
             ))}
           </div>
@@ -831,25 +845,35 @@ const Blog = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {posts.map((post, idx) => (
-            <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={post.image || post.img} 
-                  alt={t(post.title, lang)} 
-                  className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
+          {posts.map((post: any, idx: number) => {
+            const title = lang === 'th' && post.title_th ? post.title_th : (t(post.title, lang) || post.title);
+            const desc = lang === 'th' && post.desc_th ? post.desc_th : (t(post.desc, lang) || post.desc);
+            const category = lang === 'th' && post.category_th ? post.category_th : (t(post.category, lang) || post.category);
+            
+            return (
+              <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
+                <div className="aspect-video overflow-hidden">
+                  <img 
+                    src={post.image || post.img} 
+                    alt={title} 
+                    className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm text-orange-500 font-medium">{post.date}</p>
+                    {category && <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">{category}</span>}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">{title}</h3>
+                  {desc && <p className="text-slate-600 mb-4 line-clamp-2">{desc}</p>}
+                  <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-slate-600 font-medium flex items-center hover:text-slate-900 transition">
+                    {t('Read More', lang)} <ArrowRight className="w-4 h-4 ml-1" />
+                  </button>
+                </div>
               </div>
-              <div className="p-6">
-                <p className="text-sm text-orange-500 font-medium mb-2">{post.date}</p>
-                <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-orange-600 transition">{t(post.title, lang)}</h3>
-                <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-slate-600 font-medium flex items-center hover:text-slate-900 transition">
-                  {t('Read More', lang)} <ArrowRight className="w-4 h-4 ml-1" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -952,6 +976,7 @@ const MapSection = () => {
   
   const mapEmbedUrl = siteContent?.contact?.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.583324647352!2d101.0185073148216!3d12.9344799908801!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102958013e80001%3A0x6000000000000000!2sKhao%20Mai%20Kaeo%2C%20Bang%20Lamung%20District%2C%20Chon%20Buri%2020150%2C%20Thailand!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus";
   const mapLinkUrl = siteContent?.contact?.mapLinkUrl || "https://maps.google.com/?q=21+2,+Khao+Mai+Kaeo,+Bang+Lamung+District,+Chon+Buri+20150";
+  const mapButtonText = lang === 'th' && siteContent?.contact?.mapButtonText_th ? siteContent.contact.mapButtonText_th : (siteContent?.contact?.mapButtonText || t('Open in Google Maps', lang));
 
   return (
     <section className="bg-slate-200 h-96 relative">
@@ -968,7 +993,7 @@ const MapSection = () => {
       ></iframe>
       <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
         <a href={mapLinkUrl} target="_blank" rel="noopener noreferrer" className="pointer-events-auto bg-white text-slate-900 px-6 py-3 rounded-md font-bold shadow-lg hover:bg-slate-50 transition border border-slate-200 flex items-center mt-48">
-          <MapPin className="w-5 h-5 mr-2 text-orange-500" /> {t('Open in Google Maps', lang)}
+          <MapPin className="w-5 h-5 mr-2 text-orange-500" /> {mapButtonText}
         </a>
       </div>
     </section>
