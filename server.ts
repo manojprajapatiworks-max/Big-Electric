@@ -14,7 +14,9 @@ let siteContent = {
     headline_th: "บริการซ่อมและพันขดลวดมอเตอร์ไฟฟ้าระดับมืออาชีพ",
     subheadline: "Reliable industrial motor repair services in Chon Buri and Pattaya. Fast turnaround, guaranteed quality.",
     subheadline_th: "บริการซ่อมมอเตอร์อุตสาหกรรมที่เชื่อถือได้ในชลบุรีและพัทยา ซ่อมเสร็จไว มั่นใจในคุณภาพ",
-    phone: "+66 94 260 8244"
+    phone: "+66 94 260 8244",
+    bgImage: "https://picsum.photos/seed/factory/1920/1080",
+    logo: ""
   },
   stats: {
     yearsExperience: "10",
@@ -26,7 +28,9 @@ let siteContent = {
     address_th: "21 2 เขาไม้แก้ว\nอำเภอบางละมุง\nชลบุรี 20150 ประเทศไทย",
     phone: "+66 94 260 8244",
     line: "@bigmotor",
-    email: "service@bigmotor.co.th"
+    email: "service@bigmotor.co.th",
+    mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.583324647352!2d101.0185073148216!3d12.9344799908801!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102958013e80001%3A0x6000000000000000!2sKhao%20Mai%20Kaeo%2C%20Bang%20Lamung%20District%2C%20Chon%20Buri%2020150%2C%20Thailand!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus",
+    mapLinkUrl: "https://maps.google.com/?q=21+2,+Khao+Mai+Kaeo,+Bang+Lamung+District,+Chon+Buri+20150"
   },
   footer: {
     description: "Professional electric motor repair and rewinding services in Chon Buri and Pattaya. We keep your industry running.",

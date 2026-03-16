@@ -179,6 +179,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
                       <input type="text" value={content.hero?.phone || ''} onChange={(e) => handleChange('hero', 'phone', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                     </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Company Logo URL</label>
+                      <input type="text" value={content.hero?.logo || ''} onChange={(e) => handleChange('hero', 'logo', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="Leave empty to use default text logo" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Hero Background Image URL</label>
+                      <input type="text" value={content.hero?.bgImage || ''} onChange={(e) => handleChange('hero', 'bgImage', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://..." />
+                    </div>
                   </div>
                 </div>
               )}
@@ -226,6 +234,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">LINE ID</label>
                       <input type="text" value={content.contact?.line || ''} onChange={(e) => handleChange('contact', 'line', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Google Map Embed URL (iframe src)</label>
+                      <input type="text" value={content.contact?.mapEmbedUrl || ''} onChange={(e) => handleChange('contact', 'mapEmbedUrl', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://www.google.com/maps/embed?pb=..." />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Google Map Link URL (Open in Maps button)</label>
+                      <input type="text" value={content.contact?.mapLinkUrl || ''} onChange={(e) => handleChange('contact', 'mapLinkUrl', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://maps.google.com/?q=..." />
                     </div>
                   </div>
                 </div>

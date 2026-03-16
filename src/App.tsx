@@ -193,11 +193,15 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <div className="text-2xl font-bold text-slate-900 flex items-center">
-              <Zap className="w-8 h-8 text-orange-500 mr-2" />
-              <span className="hidden sm:block lg:hidden xl:block">BIG ELECTRICMOTOR</span>
-              <span className="block sm:hidden lg:block xl:hidden">BIG MOTOR</span>
-            </div>
+            {siteContent?.hero?.logo ? (
+              <img src={siteContent.hero.logo} alt="Company Logo" className="h-12 object-contain" referrerPolicy="no-referrer" />
+            ) : (
+              <div className="text-2xl font-bold text-slate-900 flex items-center">
+                <Zap className="w-8 h-8 text-orange-500 mr-2" />
+                <span className="hidden sm:block lg:hidden xl:block">BIG ELECTRICMOTOR</span>
+                <span className="block sm:hidden lg:block xl:hidden">BIG MOTOR</span>
+              </div>
+            )}
           </div>
 
           {/* Desktop Menu */}
@@ -290,12 +294,13 @@ const Hero = () => {
   
   const headline = lang === 'th' && siteContent?.hero?.headline_th ? siteContent.hero.headline_th : (siteContent?.hero?.headline || 'Professional Electric Motor Repair & Rewinding Service');
   const subheadline = lang === 'th' && siteContent?.hero?.subheadline_th ? siteContent.hero.subheadline_th : (siteContent?.hero?.subheadline || 'Reliable industrial motor repair services in Chon Buri and Pattaya. Fast turnaround, guaranteed quality.');
+  const bgImage = siteContent?.hero?.bgImage || "https://picsum.photos/seed/factory/1920/1080";
 
   return (
     <section id="home" className="relative bg-slate-900 text-white">
       <div className="absolute inset-0 overflow-hidden">
         <img 
-          src="https://picsum.photos/seed/factory/1920/1080" 
+          src={bgImage} 
           alt="Electric motor repair workshop" 
           className="w-full h-full object-cover opacity-30"
           referrerPolicy="no-referrer"
@@ -935,10 +940,14 @@ const Contact = () => {
 const MapSection = () => {
   const siteContent = useContext(SiteContext);
   const { lang } = useContext(LanguageContext);
+  
+  const mapEmbedUrl = siteContent?.contact?.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.583324647352!2d101.0185073148216!3d12.9344799908801!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102958013e80001%3A0x6000000000000000!2sKhao%20Mai%20Kaeo%2C%20Bang%20Lamung%20District%2C%20Chon%20Buri%2020150%2C%20Thailand!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus";
+  const mapLinkUrl = siteContent?.contact?.mapLinkUrl || "https://maps.google.com/?q=21+2,+Khao+Mai+Kaeo,+Bang+Lamung+District,+Chon+Buri+20150";
+
   return (
     <section className="bg-slate-200 h-96 relative">
       <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.583324647352!2d101.0185073148216!3d12.9344799908801!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102958013e80001%3A0x6000000000000000!2sKhao%20Mai%20Kaeo%2C%20Bang%20Lamung%20District%2C%20Chon%20Buri%2020150%2C%20Thailand!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
+        src={mapEmbedUrl} 
         width="100%" 
         height="100%" 
         style={{ border: 0 }} 
@@ -949,7 +958,7 @@ const MapSection = () => {
         className="absolute inset-0"
       ></iframe>
       <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
-        <a href="https://maps.google.com/?q=21+2,+Khao+Mai+Kaeo,+Bang+Lamung+District,+Chon+Buri+20150" target="_blank" rel="noopener noreferrer" className="pointer-events-auto bg-white text-slate-900 px-6 py-3 rounded-md font-bold shadow-lg hover:bg-slate-50 transition border border-slate-200 flex items-center mt-48">
+        <a href={mapLinkUrl} target="_blank" rel="noopener noreferrer" className="pointer-events-auto bg-white text-slate-900 px-6 py-3 rounded-md font-bold shadow-lg hover:bg-slate-50 transition border border-slate-200 flex items-center mt-48">
           <MapPin className="w-5 h-5 mr-2 text-orange-500" /> {t('Open in Google Maps', lang)}
         </a>
       </div>
@@ -968,9 +977,15 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div>
-            <div className="text-2xl font-bold text-white flex items-center mb-6">
-              <Zap className="w-6 h-6 text-orange-500 mr-2" />
-              BIG MOTOR
+            <div className="flex items-center mb-6">
+              {siteContent?.hero?.logo ? (
+                <img src={siteContent.hero.logo} alt="Company Logo" className="h-10 object-contain bg-white p-1 rounded" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="text-2xl font-bold text-white flex items-center">
+                  <Zap className="w-6 h-6 text-orange-500 mr-2" />
+                  BIG MOTOR
+                </div>
+              )}
             </div>
             <p className="mb-6">{description}</p>
             <div className="flex space-x-4">
