@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare } from 'lucide-react';
+import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check } from 'lucide-react';
 
 export default function AdminPanel({ token, onLogout, siteContent, onUpdateContent }: { token: string, onLogout: () => void, siteContent: any, onUpdateContent: (content: any) => void }) {
   const [content, setContent] = useState<any>(null);
@@ -438,6 +438,37 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Heading (English)</label>
+                        <input 
+                          type="text" 
+                          value={content.whyChooseUs?.heading?.en || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.heading) newWhyChooseUs.heading = {};
+                            newWhyChooseUs.heading.en = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Heading (Thai)</label>
+                        <input 
+                          type="text" 
+                          value={content.whyChooseUs?.heading?.th || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.heading) newWhyChooseUs.heading = {};
+                            newWhyChooseUs.heading.th = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Button Text (English)</label>
                         <input 
                           type="text" 
@@ -460,6 +491,37 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                             const newWhyChooseUs = { ...content.whyChooseUs };
                             if (!newWhyChooseUs.buttonText) newWhyChooseUs.buttonText = {};
                             newWhyChooseUs.buttonText.th = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Popup Details (English)</label>
+                        <textarea 
+                          rows={4}
+                          value={content.whyChooseUs?.details?.en || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.details) newWhyChooseUs.details = {};
+                            newWhyChooseUs.details.en = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Popup Details (Thai)</label>
+                        <textarea 
+                          rows={4}
+                          value={content.whyChooseUs?.details?.th || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.details) newWhyChooseUs.details = {};
+                            newWhyChooseUs.details.th = e.target.value;
                             onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
                           }}
                           className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"

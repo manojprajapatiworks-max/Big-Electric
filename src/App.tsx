@@ -144,6 +144,22 @@ const t = (key: string, lang: Language) => {
   return dict[key] ? dict[key][lang] : key;
 };
 
+const scrollToSectionHelper = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string, callback?: () => void) => {
+  e.preventDefault();
+  const element = document.getElementById(sectionId);
+  if (element) {
+    const headerOffset = 100; // Adjust based on your header height
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  }
+  if (callback) callback();
+};
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -172,19 +188,7 @@ const Header = () => {
   }, []);
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const headerOffset = 100; // Adjust based on your header height
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-  
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
-    }
-    setIsMenuOpen(false);
+    scrollToSectionHelper(e, sectionId, () => setIsMenuOpen(false));
   };
 
   const companyName = siteContent?.hero?.companyName || 'BIG ELECTRICMOTOR';
@@ -732,6 +736,7 @@ const Calculator = () => {
 const WhyChooseUs = () => {
   const { lang } = useContext(LanguageContext);
   const siteContent = useContext(SiteContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const points = [
     "Professional Technicians",
     "Modern Repair Equipment",
@@ -742,7 +747,9 @@ const WhyChooseUs = () => {
   ];
 
   const imageUrl = siteContent?.whyChooseUs?.imageUrl || "https://picsum.photos/seed/technician/800/600";
+  const heading = siteContent?.whyChooseUs?.heading?.[lang] || t('Why Choose BIG ELECTRICMOTOR?', lang);
   const buttonText = siteContent?.whyChooseUs?.buttonText?.[lang] || t('Learn More About Us', lang);
+  const detailsText = siteContent?.whyChooseUs?.details?.[lang] || "BIG ELECTRICMOTOR SERVICE CO., LTD. has been a trusted partner for industrial facilities across Chon Buri and Pattaya for over a decade. Our team of highly skilled technicians is dedicated to providing top-notch electric motor repair, rewinding, and maintenance services. We understand that downtime costs money, which is why we prioritize speed without compromising on quality. Equipped with modern diagnostic and repair tools, we handle everything from standard AC/DC motors to complex industrial pumps and generators. Our commitment to excellence, transparent pricing, and customer satisfaction makes us the preferred choice for businesses relying on continuous operations.";
 
   return (
     <section className="py-20 bg-white">
@@ -757,7 +764,7 @@ const WhyChooseUs = () => {
             />
           </div>
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">{t('Why Choose BIG ELECTRICMOTOR?', lang)}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">{heading}</h2>
             <p className="text-lg text-slate-600 mb-8">
               {t('We are the trusted partner for industrial facilities across Chon Buri and Pattaya. Our commitment to quality and speed ensures your operations experience minimal downtime.', lang)}
             </p>
@@ -774,13 +781,46 @@ const WhyChooseUs = () => {
             </div>
             
             <div className="mt-10">
-              <button className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-md font-bold transition shadow-md">
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-md font-bold transition shadow-md"
+              >
                 {buttonText}
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Details Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100">
+              <h3 className="text-2xl font-bold text-slate-900">{heading}</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-100"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+                {detailsText}
+              </p>
+            </div>
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-md font-medium transition"
+              >
+                {t('Close', lang)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
@@ -1295,13 +1335,15 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
           <div>
             <h4 className="text-white font-bold text-lg mb-6">{t('Quick Links', lang)}</h4>
             <ul className="space-y-3">
-              {['Home', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((link) => (
+              {['Home', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((link) => {
+                const sectionId = link.toLowerCase().replace(' ', '-');
+                return (
                 <li key={link}>
-                  <a href={`#${link.toLowerCase().replace(' ', '-')}`} className="hover:text-orange-500 transition flex items-center">
+                  <a href={`#${sectionId}`} onClick={(e) => scrollToSectionHelper(e, sectionId)} className="hover:text-orange-500 transition flex items-center">
                     <ChevronRight className="w-4 h-4 mr-2 text-slate-600" /> {t(link, lang)}
                   </a>
                 </li>
-              ))}
+              )})}
             </ul>
           </div>
           
@@ -1310,7 +1352,7 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
             <ul className="space-y-3">
               {['Electric Motor Repair', 'Motor Rewinding', 'Pump Motor Repair', 'Generator Service', 'Industrial Maintenance'].map((link) => (
                 <li key={link}>
-                  <a href="#services" className="hover:text-orange-500 transition flex items-center">
+                  <a href="#services" onClick={(e) => scrollToSectionHelper(e, 'services')} className="hover:text-orange-500 transition flex items-center">
                     <ChevronRight className="w-4 h-4 mr-2 text-slate-600" /> {t(link, lang)}
                   </a>
                 </li>

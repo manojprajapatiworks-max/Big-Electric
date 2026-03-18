@@ -57,9 +57,17 @@ let siteContent = {
   },
   whyChooseUs: {
     imageUrl: "https://picsum.photos/seed/technician/800/600",
+    heading: {
+      en: "Why Choose BIG ELECTRICMOTOR?",
+      th: "ทำไมต้องเลือก BIG ELECTRICMOTOR?"
+    },
     buttonText: {
       en: "Learn More About Us",
       th: "เรียนรู้เพิ่มเติมเกี่ยวกับเรา"
+    },
+    details: {
+      en: "BIG ELECTRICMOTOR SERVICE CO., LTD. has been a trusted partner for industrial facilities across Chon Buri and Pattaya for over a decade. Our team of highly skilled technicians is dedicated to providing top-notch electric motor repair, rewinding, and maintenance services. We understand that downtime costs money, which is why we prioritize speed without compromising on quality. Equipped with modern diagnostic and repair tools, we handle everything from standard AC/DC motors to complex industrial pumps and generators. Our commitment to excellence, transparent pricing, and customer satisfaction makes us the preferred choice for businesses relying on continuous operations.",
+      th: "บริษัท บิ๊ก อิเล็คทริคมอเตอร์ เซอร์วิส จำกัด เป็นพันธมิตรที่ได้รับความไว้วางใจจากโรงงานอุตสาหกรรมทั่วชลบุรีและพัทยามานานกว่าทศวรรษ ทีมช่างเทคนิคที่มีทักษะสูงของเราทุ่มเทเพื่อให้บริการซ่อมแซม พันขดลวด และบำรุงรักษามอเตอร์ไฟฟ้าชั้นยอด เราเข้าใจดีว่าเวลาหยุดทำงานมีค่าใช้จ่าย นั่นคือเหตุผลที่เราให้ความสำคัญกับความเร็วโดยไม่ลดทอนคุณภาพ ด้วยเครื่องมือวินิจฉัยและซ่อมแซมที่ทันสมัย เราจัดการทุกอย่างตั้งแต่มอเตอร์ AC/DC มาตรฐานไปจนถึงปั๊มอุตสาหกรรมและเครื่องกำเนิดไฟฟ้าที่ซับซ้อน ความมุ่งมั่นสู่ความเป็นเลิศ การกำหนดราคาที่โปร่งใส และความพึงพอใจของลูกค้าทำให้เราเป็นตัวเลือกที่ธุรกิจซึ่งต้องพึ่งพาการดำเนินงานอย่างต่อเนื่องต้องการ"
     }
   },
   showTestimonials: true,
