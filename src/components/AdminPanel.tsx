@@ -98,6 +98,32 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     }));
   };
 
+  const handlePricingChange = (type: 'motor' | 'housing', field: string, value: any, isMultiplier: boolean = false) => {
+    setContent((prev: any) => {
+      const newContent = { ...prev };
+      if (!newContent.calculator) newContent.calculator = {};
+      if (!newContent.calculator.pricing) {
+        newContent.calculator.pricing = {
+          motor: { basePricePerKw: 500, voltageMultipliers: { "220V": 1.0, "380V": 1.2, "400V": 1.25, "440V": 1.3, "High Voltage": 2.0 } },
+          housing: { basePricePerMm: 10, minPrice: 1000 }
+        };
+      }
+      
+      if (isMultiplier && type === 'motor') {
+        newContent.calculator.pricing.motor.voltageMultipliers = {
+          ...newContent.calculator.pricing.motor.voltageMultipliers,
+          [field]: value
+        };
+      } else {
+        newContent.calculator.pricing[type] = {
+          ...newContent.calculator.pricing[type],
+          [field]: value
+        };
+      }
+      return newContent;
+    });
+  };
+
   const handleArrayChange = (section: string, index: number, field: string, value: string) => {
     setContent((prev: any) => {
       const newArray = [...prev[section]];
@@ -323,6 +349,70 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-slate-700 mb-1">Features (TH) - Comma separated</label>
                       <textarea value={(content.calculator?.features_th || []).join(', ')} onChange={(e) => handleChange('calculator', 'features_th', e.target.value.split(',').map((s: string) => s.trim()))} rows={3} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 border-t border-slate-200 pt-8">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Pricing Configuration</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {/* Motor Pricing */}
+                      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 className="font-bold text-slate-800 mb-4">Motor Rewinding</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per kW (THB)</label>
+                            <input 
+                              type="number" 
+                              value={content.calculator?.pricing?.motor?.basePricePerKw || 500} 
+                              onChange={(e) => handlePricingChange('motor', 'basePricePerKw', parseFloat(e.target.value))} 
+                              className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            />
+                          </div>
+                          <div>
+                            <h5 className="text-sm font-medium text-slate-700 mb-2">Voltage Multipliers</h5>
+                            <div className="space-y-2">
+                              {['220V', '380V', '400V', '440V', 'High Voltage'].map(voltage => (
+                                <div key={voltage} className="flex items-center justify-between">
+                                  <span className="text-sm text-slate-600">{voltage}</span>
+                                  <input 
+                                    type="number" 
+                                    step="0.01"
+                                    value={content.calculator?.pricing?.motor?.voltageMultipliers?.[voltage] || 1.0} 
+                                    onChange={(e) => handlePricingChange('motor', voltage, parseFloat(e.target.value), true)} 
+                                    className="w-24 border border-slate-300 rounded-md px-2 py-1 text-sm focus:ring-orange-500 focus:border-orange-500" 
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Housing Pricing */}
+                      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 className="font-bold text-slate-800 mb-4">Housing Repair</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per mm of ID (THB)</label>
+                            <input 
+                              type="number" 
+                              value={content.calculator?.pricing?.housing?.basePricePerMm || 10} 
+                              onChange={(e) => handlePricingChange('housing', 'basePricePerMm', parseFloat(e.target.value))} 
+                              className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Minimum Price (THB)</label>
+                            <input 
+                              type="number" 
+                              value={content.calculator?.pricing?.housing?.minPrice || 1000} 
+                              onChange={(e) => handlePricingChange('housing', 'minPrice', parseFloat(e.target.value))} 
+                              className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

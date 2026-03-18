@@ -32,12 +32,28 @@ let siteContent = {
     industrialClientsLabel_th: "ลูกค้าอุตสาหกรรม"
   },
   calculator: {
-    title: "Motor Rewinding Cost Calculator",
-    title_th: "เครื่องคำนวณค่าพันมอเตอร์",
-    description: "Get an instant estimate for your motor rewinding or repair. Enter your motor specifications below to see estimated costs and turnaround times.",
-    description_th: "รับการประเมินราคาซ่อมหรือพันมอเตอร์ของคุณทันที ป้อนข้อมูลจำเพาะของมอเตอร์ด้านล่างเพื่อดูค่าใช้จ่ายและเวลาที่ใช้โดยประมาณ",
+    title: "Estimate Calculator",
+    title_th: "เครื่องคำนวณราคาประเมิน",
+    description: "Get an instant estimate for your motor rewinding or housing repair. Enter your specifications below to see estimated costs and turnaround times.",
+    description_th: "รับการประเมินราคาซ่อมหรือพันมอเตอร์ของคุณทันที ป้อนข้อมูลจำเพาะด้านล่างเพื่อดูค่าใช้จ่ายและเวลาที่ใช้โดยประมาณ",
     features: ["Transparent pricing structure", "No hidden fees", "Free detailed quotation available"],
-    features_th: ["โครงสร้างราคาโปร่งใส", "ไม่มีค่าใช้จ่ายแอบแฝง", "มีใบเสนอราคาโดยละเอียดฟรี"]
+    features_th: ["โครงสร้างราคาโปร่งใส", "ไม่มีค่าใช้จ่ายแอบแฝง", "มีใบเสนอราคาโดยละเอียดฟรี"],
+    pricing: {
+      motor: {
+        basePricePerKw: 500,
+        voltageMultipliers: {
+          "220V": 1.0,
+          "380V": 1.2,
+          "400V": 1.25,
+          "440V": 1.3,
+          "High Voltage": 2.0
+        }
+      },
+      housing: {
+        basePricePerMm: 10,
+        minPrice: 1000
+      }
+    }
   },
   process: [
     { title: "Submit Service Request", title_th: "ส่งคำร้องขอรับบริการ", desc: "Contact us via phone, LINE, or web form.", desc_th: "ติดต่อเราทางโทรศัพท์ LINE หรือแบบฟอร์มบนเว็บ" },

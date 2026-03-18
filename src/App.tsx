@@ -48,6 +48,15 @@ const t = (key: string, lang: Language) => {
     'Contact us today for a free consultation and quote.': { en: 'Contact us today for a free consultation and quote.', th: 'ติดต่อเราวันนี้เพื่อขอคำปรึกษาและใบเสนอราคาฟรี' },
     'Request Service': { en: 'Request Service', th: 'ขอรับบริการ' },
     'Motor Rewinding Cost Calculator': { en: 'Motor Rewinding Cost Calculator', th: 'เครื่องคำนวณค่าพันมอเตอร์' },
+    'Estimate Calculator': { en: 'Estimate Calculator', th: 'เครื่องคำนวณราคาประเมิน' },
+    'Get an instant estimate for your motor rewinding or housing repair. Enter your specifications below to see estimated costs and turnaround times.': { en: 'Get an instant estimate for your motor rewinding or housing repair. Enter your specifications below to see estimated costs and turnaround times.', th: 'รับการประเมินราคาซ่อมหรือพันมอเตอร์ของคุณทันที ป้อนข้อมูลจำเพาะด้านล่างเพื่อดูค่าใช้จ่ายและเวลาที่ใช้โดยประมาณ' },
+    'Housing Repair': { en: 'Housing Repair', th: 'ซ่อมตัวเรือน' },
+    'Motor Power (kW)': { en: 'Motor Power (kW)', th: 'กำลังมอเตอร์ (kW)' },
+    'Inner Dia (ID) in mm': { en: 'Inner Dia (ID) in mm', th: 'เส้นผ่านศูนย์กลางภายใน (ID) เป็นมม.' },
+    'Housing Type': { en: 'Housing Type', th: 'ประเภทตัวเรือน' },
+    'Standard Cast Iron': { en: 'Standard Cast Iron', th: 'เหล็กหล่อมาตรฐาน' },
+    'Aluminum': { en: 'Aluminum', th: 'อลูมิเนียม' },
+    'Stainless Steel': { en: 'Stainless Steel', th: 'สแตนเลส' },
     'Estimate your repair costs instantly. Actual prices may vary based on inspection.': { en: 'Estimate your repair costs instantly. Actual prices may vary based on inspection.', th: 'ประเมินค่าซ่อมของคุณทันที ราคาจริงอาจแตกต่างกันไปตามการตรวจสอบ' },
     'Motor Power (HP/kW)': { en: 'Motor Power (HP/kW)', th: 'กำลังมอเตอร์ (HP/kW)' },
     'Motor Type': { en: 'Motor Type', th: 'ประเภทมอเตอร์' },
@@ -501,19 +510,62 @@ const Services = () => {
 const Calculator = () => {
   const { lang } = useContext(LanguageContext);
   const siteContent = useContext(SiteContext);
+  const [calcType, setCalcType] = useState<'motor' | 'housing'>('motor');
   const [result, setResult] = useState<{cost: string, time: string} | null>(null);
+  
+  // Form State
+  const [motorKw, setMotorKw] = useState('');
+  const [motorVoltage, setMotorVoltage] = useState('380V');
+  const [housingId, setHousingId] = useState('');
 
   const handleCalculate = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock calculation
-    setResult({
-      cost: "฿4,500 - ฿6,000",
-      time: "3 - 5 Business Days"
-    });
+    
+    const pricing = siteContent?.calculator?.pricing || {
+      motor: {
+        basePricePerKw: 500,
+        voltageMultipliers: {
+          "220V": 1.0,
+          "380V": 1.2,
+          "400V": 1.25,
+          "440V": 1.3,
+          "High Voltage": 2.0
+        }
+      },
+      housing: {
+        basePricePerMm: 10,
+        minPrice: 1000
+      }
+    };
+
+    let estimatedCost = 0;
+    
+    if (calcType === 'motor') {
+      const kw = parseFloat(motorKw) || 0;
+      const multiplier = (pricing.motor.voltageMultipliers as any)[motorVoltage] || 1.0;
+      estimatedCost = kw * pricing.motor.basePricePerKw * multiplier;
+      
+      // Add a base minimum cost if > 0
+      if (kw > 0 && estimatedCost < 1500) estimatedCost = 1500;
+      
+      setResult({
+        cost: kw > 0 ? `฿${Math.floor(estimatedCost * 0.9).toLocaleString()} - ฿${Math.ceil(estimatedCost * 1.1).toLocaleString()}` : "Please enter kW",
+        time: kw > 50 ? "7 - 14 Business Days" : "3 - 5 Business Days"
+      });
+    } else {
+      const id = parseFloat(housingId) || 0;
+      estimatedCost = id * pricing.housing.basePricePerMm;
+      if (id > 0 && estimatedCost < pricing.housing.minPrice) estimatedCost = pricing.housing.minPrice;
+      
+      setResult({
+        cost: id > 0 ? `฿${Math.floor(estimatedCost * 0.9).toLocaleString()} - ฿${Math.ceil(estimatedCost * 1.1).toLocaleString()}` : "Please enter Inner Dia",
+        time: "2 - 4 Business Days"
+      });
+    }
   };
 
-  const title = lang === 'th' && siteContent?.calculator?.title_th ? siteContent.calculator.title_th : (siteContent?.calculator?.title || t('Motor Rewinding Cost Calculator', lang));
-  const description = lang === 'th' && siteContent?.calculator?.description_th ? siteContent.calculator.description_th : (siteContent?.calculator?.description || t('Get an instant estimate for your motor rewinding or repair. Enter your motor specifications below to see estimated costs and turnaround times.', lang));
+  const title = lang === 'th' && siteContent?.calculator?.title_th ? siteContent.calculator.title_th : (siteContent?.calculator?.title || t('Estimate Calculator', lang));
+  const description = lang === 'th' && siteContent?.calculator?.description_th ? siteContent.calculator.description_th : (siteContent?.calculator?.description || t('Get an instant estimate for your motor rewinding or housing repair. Enter your specifications below to see estimated costs and turnaround times.', lang));
   const features = lang === 'th' && siteContent?.calculator?.features_th ? siteContent.calculator.features_th : (siteContent?.calculator?.features || ['Transparent pricing structure', 'No hidden fees', 'Free detailed quotation available']);
 
   return (
@@ -539,47 +591,103 @@ const Calculator = () => {
           </div>
           
           <div className="bg-white rounded-xl p-8 shadow-2xl text-slate-900">
-            <h3 className="text-2xl font-bold mb-6">{t('Calculate Estimate', lang)}</h3>
+            <div className="flex mb-6 border-b border-slate-200">
+              <button 
+                type="button"
+                className={`pb-3 px-4 font-bold text-lg transition ${calcType === 'motor' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-500 hover:text-slate-700'}`}
+                onClick={() => { setCalcType('motor'); setResult(null); }}
+              >
+                {t('Motor Rewinding', lang)}
+              </button>
+              <button 
+                type="button"
+                className={`pb-3 px-4 font-bold text-lg transition ${calcType === 'housing' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-500 hover:text-slate-700'}`}
+                onClick={() => { setCalcType('housing'); setResult(null); }}
+              >
+                {t('Housing Repair', lang)}
+              </button>
+            </div>
+            
             <form onSubmit={handleCalculate} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
-                  <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
-                    <option>{t('AC Induction Motor', lang)}</option>
-                    <option>{t('DC Motor', lang)}</option>
-                    <option>{t('Servo Motor', lang)}</option>
-                    <option>{t('Pump Motor', lang)}</option>
-                  </select>
+              {calcType === 'motor' ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
+                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
+                      <option>{t('AC Induction Motor', lang)}</option>
+                      <option>{t('DC Motor', lang)}</option>
+                      <option>{t('Servo Motor', lang)}</option>
+                      <option>{t('Pump Motor', lang)}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Power (kW)', lang)}</label>
+                    <input 
+                      type="number" 
+                      step="0.1"
+                      min="0"
+                      value={motorKw}
+                      onChange={(e) => setMotorKw(e.target.value)}
+                      placeholder={t("e.g. 7.5", lang)} 
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Voltage', lang)}</label>
+                    <select 
+                      value={motorVoltage}
+                      onChange={(e) => setMotorVoltage(e.target.value)}
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500"
+                    >
+                      <option>220V</option>
+                      <option>380V</option>
+                      <option>400V</option>
+                      <option>440V</option>
+                      <option>{t('High Voltage', lang)}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phase', lang)}</label>
+                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
+                      <option>{t('1 Phase', lang)}</option>
+                      <option>{t('3 Phase', lang)}</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('RPM', lang)}</label>
+                    <input type="text" placeholder={t("e.g. 1450 RPM", lang)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('HP / KW', lang)}</label>
-                  <input type="text" placeholder={t("e.g. 10 HP", lang)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Inner Dia (ID) in mm', lang)}</label>
+                    <input 
+                      type="number" 
+                      step="1"
+                      min="0"
+                      value={housingId}
+                      onChange={(e) => setHousingId(e.target.value)}
+                      placeholder={t("e.g. 150", lang)} 
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Housing Type', lang)}</label>
+                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
+                      <option>{t('Standard Cast Iron', lang)}</option>
+                      <option>{t('Aluminum', lang)}</option>
+                      <option>{t('Stainless Steel', lang)}</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Voltage', lang)}</label>
-                  <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
-                    <option>220V</option>
-                    <option>380V</option>
-                    <option>440V</option>
-                    <option>{t('High Voltage', lang)}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phase', lang)}</label>
-                  <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
-                    <option>{t('1 Phase', lang)}</option>
-                    <option>{t('3 Phase', lang)}</option>
-                  </select>
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('RPM', lang)}</label>
-                  <input type="text" placeholder={t("e.g. 1450 RPM", lang)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
-                </div>
-              </div>
+              )}
               
               {!result ? (
                 <button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-md transition mt-4">
-                  {t('Calculate Cost', lang)}
+                  {t('Calculate Estimate', lang)}
                 </button>
               ) : (
                 <div className="mt-6 bg-slate-50 border border-slate-200 rounded-lg p-6">
