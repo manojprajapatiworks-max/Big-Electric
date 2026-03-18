@@ -471,11 +471,19 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                           <label className="block text-xs font-medium text-slate-500 mb-1">Description (TH)</label>
                           <textarea value={service.desc_th || ''} onChange={(e) => handleArrayChange('services', idx, 'desc_th', e.target.value)} rows={2} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                         </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Detailed Description (EN)</label>
+                          <textarea value={service.longDesc || ''} onChange={(e) => handleArrayChange('services', idx, 'longDesc', e.target.value)} rows={4} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Detailed Description (TH)</label>
+                          <textarea value={service.longDesc_th || ''} onChange={(e) => handleArrayChange('services', idx, 'longDesc_th', e.target.value)} rows={4} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                        </div>
                       </div>
                     </div>
                   ))}
                   <button 
-                    onClick={() => addArrayItem('services', { title: 'New Service', title_th: '', desc: 'Service description', desc_th: '' })}
+                    onClick={() => addArrayItem('services', { title: 'New Service', title_th: '', desc: 'Service description', desc_th: '', longDesc: 'Detailed description', longDesc_th: '' })}
                     className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:text-orange-600 hover:border-orange-500 hover:bg-orange-50 transition flex items-center justify-center font-medium"
                   >
                     <Plus className="w-5 h-5 mr-2" /> Add New Service

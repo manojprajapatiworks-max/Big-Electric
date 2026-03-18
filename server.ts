@@ -63,12 +63,42 @@ let siteContent = {
     facebook: "https://facebook.com"
   },
   services: [
-    { title: "Electric Motor Repair", title_th: "ซ่อมมอเตอร์ไฟฟ้า", desc: "Comprehensive diagnostics and repair for all types of electric motors.", desc_th: "การวินิจฉัยและซ่อมแซมมอเตอร์ไฟฟ้าทุกประเภทอย่างครอบคลุม" },
-    { title: "Motor Rewinding", title_th: "พันขดลวดมอเตอร์", desc: "High-quality copper rewinding to restore motor efficiency and lifespan.", desc_th: "การพันขดลวดทองแดงคุณภาพสูงเพื่อฟื้นฟูประสิทธิภาพและอายุการใช้งานของมอเตอร์" },
-    { title: "Pump Motor Repair", title_th: "ซ่อมมอเตอร์ปั๊ม", desc: "Specialized repair services for industrial water and chemical pumps.", desc_th: "บริการซ่อมแซมเฉพาะทางสำหรับปั๊มน้ำและสารเคมีอุตสาหกรรม" },
-    { title: "Generator Motor Repair", title_th: "ซ่อมมอเตอร์เครื่องกำเนิดไฟฟ้า", desc: "Maintenance and repair for backup and continuous power generators.", desc_th: "การบำรุงรักษาและซ่อมแซมเครื่องกำเนิดไฟฟ้าสำรองและเครื่องกำเนิดไฟฟ้าต่อเนื่อง" },
-    { title: "Industrial Maintenance", title_th: "การบำรุงรักษาอุตสาหกรรม", desc: "Preventative maintenance programs to minimize factory downtime.", desc_th: "โปรแกรมการบำรุงรักษาเชิงป้องกันเพื่อลดเวลาหยุดทำงานของโรงงาน" },
-    { title: "AC/DC Motor Service", title_th: "บริการมอเตอร์ AC/DC", desc: "Expert service for both alternating and direct current motors.", desc_th: "บริการผู้เชี่ยวชาญสำหรับทั้งมอเตอร์กระแสสลับและกระแสตรง" }
+    { 
+      title: "Electric Motor Repair", title_th: "ซ่อมมอเตอร์ไฟฟ้า", 
+      desc: "Comprehensive diagnostics and repair for all types of electric motors.", desc_th: "การวินิจฉัยและซ่อมแซมมอเตอร์ไฟฟ้าทุกประเภทอย่างครอบคลุม",
+      longDesc: "Our electric motor repair service covers everything from basic maintenance to complete overhauls. We use advanced diagnostic equipment to identify electrical and mechanical faults accurately. Our process includes stator and rotor testing, bearing replacement, dynamic balancing, and comprehensive load testing to ensure your motor returns to peak operating condition.",
+      longDesc_th: "บริการซ่อมมอเตอร์ไฟฟ้าของเราครอบคลุมตั้งแต่การบำรุงรักษาขั้นพื้นฐานไปจนถึงการยกเครื่องใหม่ทั้งหมด เราใช้อุปกรณ์วินิจฉัยขั้นสูงเพื่อระบุข้อบกพร่องทางไฟฟ้าและทางกลอย่างแม่นยำ กระบวนการของเราประกอบด้วยการทดสอบสเตเตอร์และโรเตอร์ การเปลี่ยนลูกปืน การปรับสมดุลแบบไดนามิก และการทดสอบโหลดอย่างครอบคลุม เพื่อให้แน่ใจว่ามอเตอร์ของคุณกลับสู่สภาพการทำงานสูงสุด"
+    },
+    { 
+      title: "Motor Rewinding", title_th: "พันขดลวดมอเตอร์", 
+      desc: "High-quality copper rewinding to restore motor efficiency and lifespan.", desc_th: "การพันขดลวดทองแดงคุณภาพสูงเพื่อฟื้นฟูประสิทธิภาพและอายุการใช้งานของมอเตอร์",
+      longDesc: "We specialize in precision motor rewinding using premium Class H insulation materials and high-grade copper wire. Our rewinding process involves careful stripping, core testing, precision coil winding, vacuum pressure impregnation (VPI), and oven curing. This meticulous approach guarantees enhanced thermal capacity, improved efficiency, and an extended lifespan for your industrial motors.",
+      longDesc_th: "เราเชี่ยวชาญในการพันขดลวดมอเตอร์ที่มีความแม่นยำโดยใช้วัสดุฉนวน Class H ระดับพรีเมียมและลวดทองแดงเกรดสูง กระบวนการพันขดลวดของเราเกี่ยวข้องกับการลอกอย่างระมัดระวัง การทดสอบแกนกลาง การพันขดลวดที่แม่นยำ การชุบด้วยแรงดันสุญญากาศ (VPI) และการอบในเตาอบ แนวทางที่พิถีพิถันนี้รับประกันความจุความร้อนที่เพิ่มขึ้น ประสิทธิภาพที่ดีขึ้น และอายุการใช้งานที่ยาวนานขึ้นสำหรับมอเตอร์อุตสาหกรรมของคุณ"
+    },
+    { 
+      title: "Pump Motor Repair", title_th: "ซ่อมมอเตอร์ปั๊ม", 
+      desc: "Specialized repair services for industrial water and chemical pumps.", desc_th: "บริการซ่อมแซมเฉพาะทางสำหรับปั๊มน้ำและสารเคมีอุตสาหกรรม",
+      longDesc: "Industrial pumps operate in demanding environments and require specialized care. We repair and rebuild centrifugal, submersible, and positive displacement pump motors. Our service includes mechanical seal replacement, impeller balancing, shaft alignment, and protective coating applications to prevent corrosion and ensure reliable fluid handling in your facility.",
+      longDesc_th: "ปั๊มอุตสาหกรรมทำงานในสภาพแวดล้อมที่ต้องการความทนทานและต้องการการดูแลเป็นพิเศษ เราซ่อมแซมและสร้างมอเตอร์ปั๊มหอยโข่ง ปั๊มจุ่ม และปั๊มแบบแทนที่เชิงบวก บริการของเราประกอบด้วยการเปลี่ยนซีลเชิงกล การปรับสมดุลใบพัด การจัดตำแหน่งเพลา และการใช้สารเคลือบป้องกันเพื่อป้องกันการกัดกร่อนและรับประกันการจัดการของเหลวที่เชื่อถือได้ในโรงงานของคุณ"
+    },
+    { 
+      title: "Generator Motor Repair", title_th: "ซ่อมมอเตอร์เครื่องกำเนิดไฟฟ้า", 
+      desc: "Maintenance and repair for backup and continuous power generators.", desc_th: "การบำรุงรักษาและซ่อมแซมเครื่องกำเนิดไฟฟ้าสำรองและเครื่องกำเนิดไฟฟ้าต่อเนื่อง",
+      longDesc: "Reliable power generation is critical for your operations. We offer comprehensive repair and maintenance for both standby and prime power generators. Our technicians are experienced in alternator rewinding, exciter repair, voltage regulator troubleshooting, and full-load bank testing to guarantee your generator performs flawlessly when you need it most.",
+      longDesc_th: "การผลิตไฟฟ้าที่เชื่อถือได้มีความสำคัญต่อการดำเนินงานของคุณ เรานำเสนอการซ่อมแซมและบำรุงรักษาอย่างครอบคลุมสำหรับทั้งเครื่องกำเนิดไฟฟ้าสำรองและเครื่องกำเนิดไฟฟ้าหลัก ช่างเทคนิคของเรามีประสบการณ์ในการพันขดลวดอัลเทอร์เนเตอร์ การซ่อมแซมเอ็กไซเตอร์ การแก้ไขปัญหาเครื่องควบคุมแรงดันไฟฟ้า และการทดสอบโหลดแบงก์เต็มรูปแบบ เพื่อรับประกันว่าเครื่องกำเนิดไฟฟ้าของคุณจะทำงานได้อย่างไร้ที่ติเมื่อคุณต้องการมากที่สุด"
+    },
+    { 
+      title: "Industrial Maintenance", title_th: "การบำรุงรักษาอุตสาหกรรม", 
+      desc: "Preventative maintenance programs to minimize factory downtime.", desc_th: "โปรแกรมการบำรุงรักษาเชิงป้องกันเพื่อลดเวลาหยุดทำงานของโรงงาน",
+      longDesc: "Prevent unexpected breakdowns with our customized industrial maintenance programs. We conduct routine inspections, vibration analysis, thermal imaging, and electrical testing on-site. By identifying potential issues early, we help you schedule repairs during planned outages, significantly reducing costly unplanned downtime and extending the life of your critical rotating equipment.",
+      longDesc_th: "ป้องกันการพังทลายที่ไม่คาดคิดด้วยโปรแกรมการบำรุงรักษาอุตสาหกรรมที่ปรับแต่งได้ของเรา เราดำเนินการตรวจสอบตามปกติ การวิเคราะห์การสั่นสะเทือน การถ่ายภาพความร้อน และการทดสอบทางไฟฟ้าในสถานที่ ด้วยการระบุปัญหาที่อาจเกิดขึ้นตั้งแต่เนิ่นๆ เราช่วยคุณกำหนดเวลาการซ่อมแซมในช่วงที่วางแผนหยุดทำงาน ซึ่งช่วยลดเวลาหยุดทำงานที่ไม่ได้วางแผนไว้ซึ่งมีค่าใช้จ่ายสูงได้อย่างมาก และยืดอายุการใช้งานของอุปกรณ์หมุนที่สำคัญของคุณ"
+    },
+    { 
+      title: "AC/DC Motor Service", title_th: "บริการมอเตอร์ AC/DC", 
+      desc: "Expert service for both alternating and direct current motors.", desc_th: "บริการผู้เชี่ยวชาญสำหรับทั้งมอเตอร์กระแสสลับและกระแสตรง",
+      longDesc: "Whether your facility relies on standard AC induction motors or complex DC drive systems, our experts have the knowledge and tools to service them. For DC motors, we provide specialized commutator turning, undercutting, and brush gear maintenance. For AC motors, we offer comprehensive electrical testing and mechanical overhauls to ensure optimal torque and speed control.",
+      longDesc_th: "ไม่ว่าโรงงานของคุณจะพึ่งพามอเตอร์เหนี่ยวนำ AC มาตรฐานหรือระบบขับเคลื่อน DC ที่ซับซ้อน ผู้เชี่ยวชาญของเรามีความรู้และเครื่องมือในการให้บริการ สำหรับมอเตอร์ DC เราให้บริการการกลึงคอมมิวเตเตอร์ การเซาะร่อง และการบำรุงรักษาชุดแปรงถ่านโดยเฉพาะ สำหรับมอเตอร์ AC เรานำเสนอการทดสอบทางไฟฟ้าและการยกเครื่องทางกลอย่างครอบคลุม เพื่อให้แน่ใจว่ามีการควบคุมแรงบิดและความเร็วที่เหมาะสมที่สุด"
+    }
   ],
   blogs: [
     { title: "Signs Your Electric Motor Needs Rewinding", title_th: "สัญญาณที่บ่งบอกว่ามอเตอร์ไฟฟ้าของคุณต้องพันขดลวดใหม่", category: "Maintenance", category_th: "การบำรุงรักษา", date: "Oct 12, 2026", image: "https://picsum.photos/seed/motor1/800/600", desc: "Learn the top 5 warning signs that indicate your industrial motor requires professional rewinding before a complete failure occurs.", desc_th: "เรียนรู้ 5 สัญญาณเตือนอันดับต้นๆ ที่บ่งบอกว่ามอเตอร์อุตสาหกรรมของคุณต้องได้รับการพันขดลวดใหม่โดยผู้เชี่ยวชาญก่อนที่จะเกิดความล้มเหลวโดยสมบูรณ์" },

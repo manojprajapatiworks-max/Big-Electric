@@ -44,6 +44,9 @@ const t = (key: string, lang: Language) => {
     'Testing & Diagnostics': { en: 'Testing & Diagnostics', th: 'การทดสอบและวิเคราะห์' },
     'Vibration analysis, surge testing, and electrical diagnostics.': { en: 'Vibration analysis, surge testing, and electrical diagnostics.', th: 'วิเคราะห์ความสั่นสะเทือน ทดสอบไฟกระชาก และวิเคราะห์ระบบไฟฟ้า' },
     'Learn More': { en: 'Learn More', th: 'เรียนรู้เพิ่มเติม' },
+    'Need this service?': { en: 'Need this service?', th: 'ต้องการบริการนี้หรือไม่?' },
+    'Contact us today for a free consultation and quote.': { en: 'Contact us today for a free consultation and quote.', th: 'ติดต่อเราวันนี้เพื่อขอคำปรึกษาและใบเสนอราคาฟรี' },
+    'Request Service': { en: 'Request Service', th: 'ขอรับบริการ' },
     'Motor Rewinding Cost Calculator': { en: 'Motor Rewinding Cost Calculator', th: 'เครื่องคำนวณค่าพันมอเตอร์' },
     'Estimate your repair costs instantly. Actual prices may vary based on inspection.': { en: 'Estimate your repair costs instantly. Actual prices may vary based on inspection.', th: 'ประเมินค่าซ่อมของคุณทันที ราคาจริงอาจแตกต่างกันไปตามการตรวจสอบ' },
     'Motor Power (HP/kW)': { en: 'Motor Power (HP/kW)', th: 'กำลังมอเตอร์ (HP/kW)' },
@@ -404,6 +407,8 @@ const TrustSection = () => {
 const Services = () => {
   const { lang } = useContext(LanguageContext);
   const siteContent = useContext(SiteContext);
+  const [selectedService, setSelectedService] = useState<any>(null);
+  
   const icons = [
     <Wrench className="w-8 h-8" />,
     <Activity className="w-8 h-8" />,
@@ -423,7 +428,7 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-20 bg-slate-50">
+    <section id="services" className="py-20 bg-slate-50 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{t('Our Professional Services', lang)}</h2>
@@ -431,20 +436,64 @@ const Services = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {servicesList.map((service, idx) => (
+          {servicesList.map((service: any, idx: number) => (
             <div key={idx} className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition border border-slate-100 group">
               <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500 group-hover:text-white transition">
                 {icons[idx % icons.length]}
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">{lang === 'th' && service.title_th ? service.title_th : (t(service.title, lang) || service.title)}</h3>
               <p className="text-slate-600 mb-6 line-clamp-2">{lang === 'th' && service.desc_th ? service.desc_th : (t(service.desc, lang) || service.desc)}</p>
-              <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-orange-600 font-semibold flex items-center hover:text-orange-700 transition">
+              <button onClick={() => setSelectedService(service)} className="text-orange-600 font-semibold flex items-center hover:text-orange-700 transition">
                 {t('Learn More', lang)} <ChevronRight className="w-4 h-4 ml-1" />
               </button>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Service Details Modal */}
+      {selectedService && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100">
+              <h3 className="text-2xl font-bold text-slate-900">
+                {lang === 'th' && selectedService.title_th ? selectedService.title_th : (t(selectedService.title, lang) || selectedService.title)}
+              </h3>
+              <button 
+                onClick={() => setSelectedService(null)}
+                className="text-slate-400 hover:text-slate-600 transition p-1"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <p className="text-slate-700 text-lg leading-relaxed mb-8">
+                {lang === 'th' && selectedService.longDesc_th 
+                  ? selectedService.longDesc_th 
+                  : (selectedService.longDesc || (lang === 'th' && selectedService.desc_th ? selectedService.desc_th : (t(selectedService.desc, lang) || selectedService.desc)))}
+              </p>
+              
+              <div className="bg-orange-50 rounded-xl p-6 border border-orange-100 flex flex-col sm:flex-row items-center justify-between">
+                <div className="mb-4 sm:mb-0">
+                  <h4 className="font-bold text-slate-900 mb-1">{t('Need this service?', lang)}</h4>
+                  <p className="text-sm text-slate-600">{t('Contact us today for a free consultation and quote.', lang)}</p>
+                </div>
+                <button 
+                  onClick={() => {
+                    setSelectedService(null);
+                    setTimeout(() => {
+                      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium transition w-full sm:w-auto whitespace-nowrap"
+                >
+                  {t('Request Service', lang)}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
