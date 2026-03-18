@@ -77,11 +77,31 @@ let siteContent = {
   ],
   trackingIds: [
     { id: "EMS-000245", status: "Rewinding", completionDate: "Oct 24, 2026" }
+  ],
+  workshopGallery: [
+    "https://picsum.photos/seed/workshop1/800/600",
+    "https://picsum.photos/seed/workshop2/800/600",
+    "https://picsum.photos/seed/workshop3/800/600",
+    "https://picsum.photos/seed/workshop4/800/600",
+    "https://picsum.photos/seed/workshop5/800/600",
+    "https://picsum.photos/seed/workshop6/800/600"
   ]
 };
 
+let serviceRequests: any[] = [];
+
 app.get("/api/content", (req, res) => {
   res.json(siteContent);
+});
+
+app.post("/api/service-request", (req, res) => {
+  const newRequest = {
+    id: Date.now().toString(),
+    ...req.body,
+    date: new Date().toISOString()
+  };
+  serviceRequests.unshift(newRequest);
+  res.json({ success: true, data: newRequest });
 });
 
 app.post("/api/login", (req, res) => {
@@ -110,6 +130,15 @@ const authenticateToken = (req: any, res: any, next: any) => {
 app.post("/api/content", authenticateToken, (req, res) => {
   siteContent = { ...siteContent, ...req.body };
   res.json({ success: true, data: siteContent });
+});
+
+app.get("/api/service-requests", authenticateToken, (req, res) => {
+  res.json(serviceRequests);
+});
+
+app.delete("/api/service-requests/:id", authenticateToken, (req, res) => {
+  serviceRequests = serviceRequests.filter(req => req.id !== req.params.id);
+  res.json({ success: true });
 });
 
 async function startServer() {

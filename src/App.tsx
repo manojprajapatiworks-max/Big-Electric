@@ -784,7 +784,9 @@ const Testimonials = () => {
 
 const Gallery = () => {
   const { lang } = useContext(LanguageContext);
-  const images = [
+  const siteContent = useContext(SiteContext);
+  
+  const images = siteContent?.workshopGallery || [
     "https://picsum.photos/seed/motor1/600/400",
     "https://picsum.photos/seed/motor2/600/400",
     "https://picsum.photos/seed/motor3/600/400",
@@ -884,7 +886,39 @@ const Contact = () => {
   const siteContent = useContext(SiteContext);
   const { lang } = useContext(LanguageContext);
   
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    motorType: '',
+    issue: ''
+  });
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  
   const address = lang === 'th' && siteContent?.contact?.address_th ? siteContent.contact.address_th : (siteContent?.contact?.address || '21 2, Khao Mai Kaeo\nBang Lamung District\nChon Buri 20150, Thailand');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    try {
+      const response = await fetch('/api/service-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', phone: '', motorType: '', issue: '' });
+        setTimeout(() => setStatus('idle'), 5000);
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Failed to submit request', error);
+      setStatus('error');
+    }
+  };
 
   return (
     <section id="contact" className="py-20 bg-white">
@@ -940,29 +974,67 @@ const Contact = () => {
           
           <div className="bg-slate-50 p-8 rounded-xl border border-slate-200">
             <h3 className="text-2xl font-bold text-slate-900 mb-6">{t('Quick Service Request', lang)}</h3>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert(t('Request sent successfully!', lang)); }}>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('Name / Company', lang)}</label>
-                <input type="text" required className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" />
+            {status === 'success' ? (
+              <div className="bg-green-50 border border-green-200 text-green-800 rounded-md p-6 text-center">
+                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                <h4 className="text-lg font-bold mb-1">{t('Request Sent Successfully!', lang)}</h4>
+                <p>{t('We will contact you shortly.', lang)}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+            ) : (
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phone', lang)}</label>
-                  <input type="tel" required className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Name / Company', lang)}</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phone', lang)}</label>
+                    <input 
+                      type="tel" 
+                      required 
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
+                    <input 
+                      type="text" 
+                      value={formData.motorType}
+                      onChange={(e) => setFormData({...formData, motorType: e.target.value})}
+                      className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                    />
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
-                  <input type="text" className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Issue Description', lang)}</label>
+                  <textarea 
+                    rows={4} 
+                    required 
+                    value={formData.issue}
+                    onChange={(e) => setFormData({...formData, issue: e.target.value})}
+                    className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500"
+                  ></textarea>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">{t('Issue Description', lang)}</label>
-                <textarea rows={4} required className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500"></textarea>
-              </div>
-              <button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition mt-2">
-                {t('Send Request', lang)}
-              </button>
-            </form>
+                <button 
+                  type="submit" 
+                  disabled={status === 'submitting'}
+                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-3 px-4 rounded-md transition mt-2 flex justify-center items-center"
+                >
+                  {status === 'submitting' ? t('Sending...', lang) : t('Send Request', lang)}
+                </button>
+                {status === 'error' && (
+                  <p className="text-red-500 text-sm mt-2">Failed to send request. Please try again.</p>
+                )}
+              </form>
+            )}
           </div>
         </div>
       </div>

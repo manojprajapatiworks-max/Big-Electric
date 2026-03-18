@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2 } from 'lucide-react';
+import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare } from 'lucide-react';
 
 export default function AdminPanel({ token, onLogout, siteContent, onUpdateContent }: { token: string, onLogout: () => void, siteContent: any, onUpdateContent: (content: any) => void }) {
   const [content, setContent] = useState<any>(null);
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [activeTab, setActiveTab] = useState('hero');
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
 
   useEffect(() => {
     // Deep copy to avoid mutating original state directly before saving
@@ -13,6 +14,45 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
       setContent(JSON.parse(JSON.stringify(siteContent)));
     }
   }, [siteContent]);
+
+  useEffect(() => {
+    if (activeTab === 'serviceRequests') {
+      fetchServiceRequests();
+    }
+  }, [activeTab]);
+
+  const fetchServiceRequests = async () => {
+    try {
+      const response = await fetch('/api/service-requests', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setServiceRequests(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch service requests', error);
+    }
+  };
+
+  const handleDeleteServiceRequest = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this request?')) return;
+    try {
+      const response = await fetch(`/api/service-requests/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        setServiceRequests(prev => prev.filter(req => req.id !== id));
+      }
+    } catch (error) {
+      console.error('Failed to delete service request', error);
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -92,7 +132,9 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     { id: 'footer', label: 'Footer', icon: <LayoutPanelTop className="w-4 h-4 mr-2" /> },
     { id: 'services', label: 'Services', icon: <Wrench className="w-4 h-4 mr-2" /> },
     { id: 'blogs', label: 'Blogs', icon: <FileText className="w-4 h-4 mr-2" /> },
+    { id: 'workshopGallery', label: 'Workshop Gallery', icon: <Image className="w-4 h-4 mr-2" /> },
     { id: 'trackingIds', label: 'Tracking IDs', icon: <Activity className="w-4 h-4 mr-2" /> },
+    { id: 'serviceRequests', label: 'Service Requests', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
   ];
 
   return (
@@ -498,6 +540,49 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 </div>
               )}
 
+              {/* WORKSHOP GALLERY SECTION */}
+              {activeTab === 'workshopGallery' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-slate-900">Workshop Gallery Images</h3>
+                    <button onClick={() => addArrayItem('workshopGallery', '')} className="flex items-center text-sm bg-orange-500 text-white px-3 py-1.5 rounded hover:bg-orange-600 transition">
+                      <Plus className="w-4 h-4 mr-1" /> Add Image URL
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    {(content.workshopGallery || []).map((url: string, idx: number) => (
+                      <div key={idx} className="flex items-center space-x-4">
+                        <div className="flex-1">
+                          <label className="block text-xs font-medium text-slate-500 mb-1">Image URL {idx + 1}</label>
+                          <input 
+                            type="text" 
+                            value={url} 
+                            onChange={(e) => {
+                              const newGallery = [...content.workshopGallery];
+                              newGallery[idx] = e.target.value;
+                              handleChange('workshopGallery', '', newGallery);
+                            }} 
+                            className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            placeholder="https://example.com/image.jpg"
+                          />
+                        </div>
+                        <div className="w-16 h-16 bg-slate-100 rounded border border-slate-200 overflow-hidden flex-shrink-0 mt-5">
+                          {url ? <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" /> : <div className="w-full h-full flex items-center justify-center text-slate-400"><Image className="w-6 h-6" /></div>}
+                        </div>
+                        <button 
+                          onClick={() => removeArrayItem('workshopGallery', idx)}
+                          className="text-slate-400 hover:text-red-500 transition mt-5"
+                          title="Remove Image"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* TRACKING IDS SECTION */}
               {activeTab === 'trackingIds' && (
                 <div className="space-y-6">
@@ -543,6 +628,61 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                   >
                     <Plus className="w-5 h-5 mr-2" /> Add New Tracking ID
                   </button>
+                </div>
+              )}
+
+              {/* SERVICE REQUESTS SECTION */}
+              {activeTab === 'serviceRequests' && (
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-slate-900">Service Requests</h3>
+                    <button onClick={fetchServiceRequests} className="text-sm text-slate-500 hover:text-slate-700">
+                      Refresh
+                    </button>
+                  </div>
+                  
+                  {serviceRequests.length === 0 ? (
+                    <div className="text-center py-12 bg-slate-50 rounded-lg border border-slate-200">
+                      <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500">No service requests yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {serviceRequests.map((req: any) => (
+                        <div key={req.id} className="bg-white p-5 rounded-lg border border-slate-200 shadow-sm relative">
+                          <button 
+                            onClick={() => handleDeleteServiceRequest(req.id)}
+                            className="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition"
+                            title="Delete Request"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Date</p>
+                              <p className="text-sm font-medium text-slate-900">{new Date(req.date).toLocaleString()}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Name / Company</p>
+                              <p className="text-sm font-medium text-slate-900">{req.name}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Phone</p>
+                              <p className="text-sm font-medium text-slate-900">{req.phone}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Motor Type</p>
+                              <p className="text-sm font-medium text-slate-900">{req.motorType || 'N/A'}</p>
+                            </div>
+                            <div className="md:col-span-2">
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Issue Description</p>
+                              <p className="text-sm text-slate-700 bg-slate-50 p-3 rounded border border-slate-100 mt-1 whitespace-pre-wrap">{req.issue}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
