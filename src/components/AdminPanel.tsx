@@ -153,10 +153,12 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     { id: 'hero', label: 'Hero Section', icon: <LayoutTemplate className="w-4 h-4 mr-2" /> },
     { id: 'stats', label: 'Statistics', icon: <BarChart className="w-4 h-4 mr-2" /> },
     { id: 'calculator', label: 'Calculator', icon: <Activity className="w-4 h-4 mr-2" /> },
+    { id: 'whyChooseUs', label: 'Why Choose Us', icon: <Check className="w-4 h-4 mr-2" /> },
     { id: 'process', label: 'Repair Process', icon: <Wrench className="w-4 h-4 mr-2" /> },
     { id: 'contact', label: 'Contact Info', icon: <Phone className="w-4 h-4 mr-2" /> },
     { id: 'footer', label: 'Footer', icon: <LayoutPanelTop className="w-4 h-4 mr-2" /> },
     { id: 'services', label: 'Services', icon: <Wrench className="w-4 h-4 mr-2" /> },
+    { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
     { id: 'blogs', label: 'Blogs', icon: <FileText className="w-4 h-4 mr-2" /> },
     { id: 'workshopGallery', label: 'Workshop Gallery', icon: <Image className="w-4 h-4 mr-2" /> },
     { id: 'trackingIds', label: 'Tracking IDs', icon: <Activity className="w-4 h-4 mr-2" /> },
@@ -418,6 +420,56 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 </div>
               )}
 
+              {/* WHY CHOOSE US SECTION */}
+              {activeTab === 'whyChooseUs' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-slate-900">Why Choose Us Section</h3>
+                  
+                  <div className="grid grid-cols-1 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
+                      <input 
+                        type="text" 
+                        value={content.whyChooseUs?.imageUrl || ''} 
+                        onChange={(e) => handleChange('whyChooseUs', 'imageUrl', e.target.value)}
+                        className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Text (English)</label>
+                        <input 
+                          type="text" 
+                          value={content.whyChooseUs?.buttonText?.en || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.buttonText) newWhyChooseUs.buttonText = {};
+                            newWhyChooseUs.buttonText.en = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Button Text (Thai)</label>
+                        <input 
+                          type="text" 
+                          value={content.whyChooseUs?.buttonText?.th || ''} 
+                          onChange={(e) => {
+                            const newWhyChooseUs = { ...content.whyChooseUs };
+                            if (!newWhyChooseUs.buttonText) newWhyChooseUs.buttonText = {};
+                            newWhyChooseUs.buttonText.th = e.target.value;
+                            onUpdateContent({ ...content, whyChooseUs: newWhyChooseUs });
+                          }}
+                          className="w-full px-4 py-2 border border-slate-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* PROCESS SECTION */}
               {activeTab === 'process' && (
                 <div className="space-y-6">
@@ -578,6 +630,26 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                   >
                     <Plus className="w-5 h-5 mr-2" /> Add New Service
                   </button>
+                </div>
+              )}
+
+              {/* TESTIMONIALS SECTION */}
+              {activeTab === 'testimonials' && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-slate-900">Customer Testimonials</h3>
+                  
+                  <div className="flex items-center space-x-3 mb-6 bg-white p-4 rounded-lg border border-slate-200">
+                    <input
+                      type="checkbox"
+                      id="showTestimonials"
+                      checked={content.showTestimonials !== false}
+                      onChange={(e) => onUpdateContent({ ...content, showTestimonials: e.target.checked })}
+                      className="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="showTestimonials" className="text-sm font-medium text-slate-700">
+                      Show Customer Testimonials section on the website
+                    </label>
+                  </div>
                 </div>
               )}
 

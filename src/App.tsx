@@ -171,6 +171,22 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerOffset = 100; // Adjust based on your header height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    setIsMenuOpen(false);
+  };
+
   const companyName = siteContent?.hero?.companyName || 'BIG ELECTRICMOTOR';
   const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
 
@@ -234,6 +250,7 @@ const Header = () => {
               <a 
                 key={item} 
                 href={`#${sectionId}`} 
+                onClick={(e) => scrollToSection(e, sectionId)}
                 className={`font-medium transition text-sm xl:text-base ${isActive ? 'text-orange-500' : 'text-slate-700 hover:text-orange-500'}`}
               >
                 {t(item, lang)}
@@ -271,7 +288,7 @@ const Header = () => {
               <a 
                 key={item} 
                 href={`#${sectionId}`} 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => scrollToSection(e, sectionId)}
                 className={`block px-3 py-2 text-base font-medium rounded-md transition ${isActive ? 'text-orange-500 bg-orange-50' : 'text-slate-700 hover:text-orange-500 hover:bg-slate-50'}`}
               >
                 {t(item, lang)}
@@ -714,6 +731,7 @@ const Calculator = () => {
 
 const WhyChooseUs = () => {
   const { lang } = useContext(LanguageContext);
+  const siteContent = useContext(SiteContext);
   const points = [
     "Professional Technicians",
     "Modern Repair Equipment",
@@ -723,13 +741,16 @@ const WhyChooseUs = () => {
     "Industrial Motor Expertise"
   ];
 
+  const imageUrl = siteContent?.whyChooseUs?.imageUrl || "https://picsum.photos/seed/technician/800/600";
+  const buttonText = siteContent?.whyChooseUs?.buttonText?.[lang] || t('Learn More About Us', lang);
+
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <img 
-              src="https://picsum.photos/seed/technician/800/600" 
+              src={imageUrl} 
               alt="Professional Technician" 
               className="rounded-2xl shadow-xl"
               referrerPolicy="no-referrer"
@@ -754,7 +775,7 @@ const WhyChooseUs = () => {
             
             <div className="mt-10">
               <button className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-md font-bold transition shadow-md">
-                {t('Learn More About Us', lang)}
+                {buttonText}
               </button>
             </div>
           </div>
@@ -942,6 +963,7 @@ const Testimonials = () => {
 const Gallery = () => {
   const { lang } = useContext(LanguageContext);
   const siteContent = useContext(SiteContext);
+  const [showAll, setShowAll] = useState(false);
   
   const images = siteContent?.workshopGallery || [
     "https://picsum.photos/seed/motor1/600/400",
@@ -950,21 +972,23 @@ const Gallery = () => {
     "https://picsum.photos/seed/motor4/600/400",
   ];
 
+  const displayedImages = showAll ? images : images.slice(0, 4);
+
   return (
-    <section className="py-20 bg-slate-900">
+    <section className="py-20 bg-slate-900" id="gallery">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('Workshop Gallery', lang)}</h2>
             <p className="text-lg text-slate-400">{t('A glimpse into our professional repair facility.', lang)}</p>
           </div>
-          <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="hidden sm:flex items-center text-orange-500 hover:text-orange-400 font-medium transition">
-            {t('View All Photos', lang)} <ArrowRight className="w-4 h-4 ml-2" />
+          <button onClick={() => setShowAll(!showAll)} className="hidden sm:flex items-center text-orange-500 hover:text-orange-400 font-medium transition">
+            {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
           </button>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {images.map((img, idx) => (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500">
+          {displayedImages.map((img, idx) => (
             <div key={idx} className="relative group overflow-hidden rounded-lg aspect-video">
               <img 
                 src={img} 
@@ -978,8 +1002,8 @@ const Gallery = () => {
             </div>
           ))}
         </div>
-        <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="sm:hidden mt-8 w-full flex justify-center items-center text-orange-500 font-medium">
-          {t('View All Photos', lang)} <ArrowRight className="w-4 h-4 ml-2" />
+        <button onClick={() => setShowAll(!showAll)} className="sm:hidden mt-8 w-full flex justify-center items-center text-orange-500 font-medium">
+          {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
         </button>
       </div>
     </section>
@@ -1491,7 +1515,7 @@ export default function App() {
             <WhyChooseUs />
             <Process />
             <Tracking />
-            <Testimonials />
+            {siteContent?.showTestimonials !== false && <Testimonials />}
             <Gallery />
             <Blog />
             <Contact />

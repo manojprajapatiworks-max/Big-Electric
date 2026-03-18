@@ -55,6 +55,14 @@ let siteContent = {
       }
     }
   },
+  whyChooseUs: {
+    imageUrl: "https://picsum.photos/seed/technician/800/600",
+    buttonText: {
+      en: "Learn More About Us",
+      th: "เรียนรู้เพิ่มเติมเกี่ยวกับเรา"
+    }
+  },
+  showTestimonials: true,
   process: [
     { title: "Submit Service Request", title_th: "ส่งคำร้องขอรับบริการ", desc: "Contact us via phone, LINE, or web form.", desc_th: "ติดต่อเราทางโทรศัพท์ LINE หรือแบบฟอร์มบนเว็บ" },
     { title: "Motor Inspection", title_th: "ตรวจสอบมอเตอร์", desc: "Thorough diagnostic to identify the root cause.", desc_th: "การวินิจฉัยอย่างละเอียดเพื่อระบุสาเหตุที่แท้จริง" },
@@ -130,7 +138,9 @@ let siteContent = {
     "https://picsum.photos/seed/workshop3/800/600",
     "https://picsum.photos/seed/workshop4/800/600",
     "https://picsum.photos/seed/workshop5/800/600",
-    "https://picsum.photos/seed/workshop6/800/600"
+    "https://picsum.photos/seed/workshop6/800/600",
+    "https://picsum.photos/seed/workshop7/800/600",
+    "https://picsum.photos/seed/workshop8/800/600"
   ]
 };
 
