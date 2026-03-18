@@ -4,7 +4,7 @@ import {
   Wrench, Zap, Settings, Activity, ShieldCheck, Clock,
   ThumbsUp, CheckCircle, Search, MapPin, Mail, Facebook,
   ArrowRight, Star, Factory, Cpu, PenTool,
-  Truck, ClipboardList, MessageSquare, Check
+  Truck, ClipboardList, MessageSquare, Check, Calendar, Tag
 } from 'lucide-react';
 import AdminPanel from './components/AdminPanel';
 
@@ -144,13 +144,13 @@ const t = (key: string, lang: Language) => {
   return dict[key] ? dict[key][lang] : key;
 };
 
-const scrollToSectionHelper = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string, callback?: () => void) => {
-  e.preventDefault();
+export const scrollToSectionById = (sectionId: string, callback?: () => void) => {
   const element = document.getElementById(sectionId);
   if (element) {
-    const headerOffset = 100; // Adjust based on your header height
+    const header = document.querySelector('header');
+    const headerOffset = header ? header.offsetHeight : 100;
     const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
     window.scrollTo({
       top: offsetPosition,
@@ -158,6 +158,11 @@ const scrollToSectionHelper = (e: React.MouseEvent<HTMLAnchorElement>, sectionId
     });
   }
   if (callback) callback();
+};
+
+const scrollToSectionHelper = (e: React.MouseEvent<HTMLElement>, sectionId: string, callback?: () => void) => {
+  if (e && e.preventDefault) e.preventDefault();
+  scrollToSectionById(sectionId, callback);
 };
 
 const Header = () => {
@@ -368,10 +373,10 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+            <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
               {t('Request Repair Service', lang)} <ArrowRight className="ml-2 w-5 h-5" />
             </button>
-            <button className="bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+            <button className="bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
               {t('Get Repair Quotation', lang)}
             </button>
           </div>
@@ -385,7 +390,7 @@ const Hero = () => {
               </div>
             </div>
             <div className="hidden sm:block h-10 w-px bg-slate-700"></div>
-            <button className="hidden sm:flex items-center text-sm hover:text-white transition underline underline-offset-4" onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}>
+            <button className="hidden sm:flex items-center text-sm hover:text-white transition underline underline-offset-4" onClick={(e) => scrollToSectionHelper(e, 'booking')}>
               {t('Calculate Rewinding Cost', lang)}
             </button>
           </div>
@@ -512,7 +517,7 @@ const Services = () => {
                   onClick={() => {
                     setSelectedService(null);
                     setTimeout(() => {
-                      document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                      scrollToSectionById('contact');
                     }, 100);
                   }}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium transition w-full sm:w-auto whitespace-nowrap"
@@ -720,7 +725,7 @@ const Calculator = () => {
                     <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">{t('Estimated Time', lang)}</p>
                     <p className="text-xl font-semibold text-slate-800">{result.time}</p>
                   </div>
-                  <button type="button" onClick={() => { setResult(null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition">
+                  <button type="button" onClick={(e) => { setResult(null); scrollToSectionHelper(e, 'contact'); }} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition">
                     {t('Request Service Now', lang)}
                   </button>
                 </div>
@@ -1053,6 +1058,7 @@ const Gallery = () => {
 const Blog = () => {
   const { lang } = useContext(LanguageContext);
   const siteContent = useContext(SiteContext);
+  const [selectedPost, setSelectedPost] = useState<any>(null);
   const posts = siteContent?.blogs || [
     { title: "Electric Motor Overheating Causes", img: "https://picsum.photos/seed/heat/600/400", date: "Oct 12, 2026" },
     { title: "Motor Rewinding Process Explained", img: "https://picsum.photos/seed/wire/600/400", date: "Sep 28, 2026" },
@@ -1090,7 +1096,7 @@ const Blog = () => {
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">{title}</h3>
                   {desc && <p className="text-slate-600 mb-4 line-clamp-2">{desc}</p>}
-                  <button onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })} className="text-slate-600 font-medium flex items-center hover:text-slate-900 transition">
+                  <button onClick={() => setSelectedPost(post)} className="text-slate-600 font-medium flex items-center hover:text-slate-900 transition">
                     {t('Read More', lang)} <ArrowRight className="w-4 h-4 ml-1" />
                   </button>
                 </div>
@@ -1099,6 +1105,59 @@ const Blog = () => {
           })}
         </div>
       </div>
+
+      {/* Blog Post Modal */}
+      {selectedPost && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100">
+              <h3 className="text-2xl font-bold text-slate-900 pr-8">
+                {lang === 'th' && selectedPost.title_th ? selectedPost.title_th : (t(selectedPost.title, lang) || selectedPost.title)}
+              </h3>
+              <button 
+                onClick={() => setSelectedPost(null)}
+                className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-100 flex-shrink-0"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="overflow-y-auto">
+              <img 
+                src={selectedPost.image || selectedPost.img} 
+                alt="Blog Cover" 
+                className="w-full h-64 object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <div className="p-6">
+                <div className="flex items-center space-x-4 mb-6 text-sm text-slate-500">
+                  <span className="flex items-center">
+                    <Calendar className="w-4 h-4 mr-1" /> {selectedPost.date}
+                  </span>
+                  {(selectedPost.category || selectedPost.category_th) && (
+                    <span className="flex items-center">
+                      <Tag className="w-4 h-4 mr-1" /> 
+                      {lang === 'th' && selectedPost.category_th ? selectedPost.category_th : (t(selectedPost.category, lang) || selectedPost.category)}
+                    </span>
+                  )}
+                </div>
+                <div className="prose prose-slate max-w-none">
+                  <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+                    {lang === 'th' && selectedPost.content_th ? selectedPost.content_th : (selectedPost.content || (lang === 'th' && selectedPost.desc_th ? selectedPost.desc_th : selectedPost.desc))}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <button 
+                onClick={() => setSelectedPost(null)}
+                className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-md font-medium transition"
+              >
+                {t('Close', lang)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
@@ -1178,7 +1237,13 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-lg font-bold text-slate-900 mb-1">{t('LINE', lang)}</h4>
-                  <p className="text-slate-600">{siteContent?.contact?.line || '@bigmotor'}</p>
+                  <p className="text-slate-600 mb-3">{siteContent?.contact?.line || '@bigmotor'}</p>
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} 
+                    alt="LINE QR Code" 
+                    className="w-32 h-32 rounded-md border border-slate-200 p-2 bg-white shadow-sm"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
               </div>
             </div>
