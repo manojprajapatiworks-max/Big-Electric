@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check } from 'lucide-react';
+import { db } from '../firebase';
+import { doc, setDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
 
 export default function AdminPanel({ token, onLogout, siteContent, onUpdateContent }: { token: string, onLogout: () => void, siteContent: any, onUpdateContent: (content: any) => void }) {
   const [content, setContent] = useState<any>(null);
@@ -17,38 +19,20 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
 
   useEffect(() => {
     if (activeTab === 'serviceRequests') {
-      fetchServiceRequests();
+      const unsub = onSnapshot(collection(db, 'serviceRequests'), (snapshot) => {
+        const requests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setServiceRequests(requests);
+      }, (error) => {
+        console.error('Failed to fetch service requests', error);
+      });
+      return () => unsub();
     }
   }, [activeTab]);
-
-  const fetchServiceRequests = async () => {
-    try {
-      const response = await fetch('/api/service-requests', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setServiceRequests(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch service requests', error);
-    }
-  };
 
   const handleDeleteServiceRequest = async (id: string) => {
     if (!confirm('Are you sure you want to delete this request?')) return;
     try {
-      const response = await fetch(`/api/service-requests/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        setServiceRequests(prev => prev.filter(req => req.id !== id));
-      }
+      await deleteDoc(doc(db, 'serviceRequests', id));
     } catch (error) {
       console.error('Failed to delete service request', error);
     }
@@ -58,21 +42,9 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     try {
       setStatus('saving');
       
-      const response = await fetch('/api/content', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(content)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save content');
-      }
-
-      const data = await response.json();
-      onUpdateContent(data.data);
+      await setDoc(doc(db, 'content', 'main'), content);
+      
+      onUpdateContent(content);
       setStatus('success');
       setTimeout(() => setStatus('idle'), 3000);
     } catch (err: any) {
@@ -606,6 +578,11 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       <label className="block text-sm font-medium text-slate-700 mb-1">LINE ID</label>
                       <input type="text" value={content.contact?.line || ''} onChange={(e) => handleChange('contact', 'line', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">LINE QR Code Image URL (Optional)</label>
+                      <input type="text" value={content.contact?.lineQrCode || ''} onChange={(e) => handleChange('contact', 'lineQrCode', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://example.com/qr.jpg" />
+                      <p className="text-xs text-slate-500 mt-1">Leave blank to auto-generate from LINE ID</p>
+                    </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-slate-700 mb-1">Google Map Embed URL (iframe src)</label>
                       <input type="text" value={content.contact?.mapEmbedUrl || ''} onChange={(e) => handleChange('contact', 'mapEmbedUrl', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" placeholder="https://www.google.com/maps/embed?pb=..." />
@@ -868,9 +845,6 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-medium text-slate-900">Service Requests</h3>
-                    <button onClick={fetchServiceRequests} className="text-sm text-slate-500 hover:text-slate-700">
-                      Refresh
-                    </button>
                   </div>
                   
                   {serviceRequests.length === 0 ? (

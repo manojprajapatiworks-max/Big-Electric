@@ -1,73 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, LogOut, Plus, Trash2, Home } from 'lucide-react';
+import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [user, setUser] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (token) {
-      fetch('/api/content')
-        .then(r => r.json())
-        .then(setContent);
-    }
-  }, [token]);
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        const unsubDoc = onSnapshot(doc(db, 'content', 'main'), (docSnap) => {
+          if (docSnap.exists()) {
+            setContent(docSnap.data());
+          }
+        }, (err) => {
+          console.error("Error fetching content:", err);
+          setError("Failed to load content. You might not have permission.");
+        });
+        return () => unsubDoc();
+      } else {
+        setContent(null);
+      }
+    });
+    return () => unsubscribeAuth();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      if (data.token) {
-        setToken(data.token);
-        localStorage.setItem('adminToken', data.token);
-      } else {
-        setError(data.error || 'Login failed');
-      }
+      await loginWithGoogle();
     } catch (err) {
-      setError('Network error');
+      setError('Login failed');
     }
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/content', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(content)
-      });
-      if (res.ok) {
-        alert('Saved successfully!');
-      } else {
-        alert('Failed to save');
-      }
+      await setDoc(doc(db, 'content', 'main'), content);
+      alert('Saved successfully!');
     } catch (err) {
-      alert('Failed to save');
+      console.error(err);
+      alert('Failed to save. Check your permissions.');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
-  const handleLogout = () => {
-    setToken('');
-    localStorage.removeItem('adminToken');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
-  if (!token) {
+  if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-100">
         <button onClick={() => navigate('/')} className="mb-8 flex items-center text-slate-600 hover:text-slate-900">
@@ -76,15 +69,7 @@ export default function Admin() {
         <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-md w-96">
           <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
           {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Username</label>
-            <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border rounded px-3 py-2" />
-          </div>
-          <button type="submit" className="w-full bg-orange-500 text-white font-bold py-2 rounded hover:bg-orange-600 transition">Login</button>
+          <button type="submit" className="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Sign in with Google</button>
         </form>
       </div>
     );

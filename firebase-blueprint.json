@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "SiteContent": {
+      "title": "Site Content",
+      "description": "Global website content and settings",
+      "type": "object",
+      "properties": {
+        "hero": { "type": "object" },
+        "stats": { "type": "object" },
+        "calculator": { "type": "object" },
+        "whyChooseUs": { "type": "object" },
+        "showTestimonials": { "type": "boolean" },
+        "process": { "type": "array" },
+        "contact": { "type": "object" },
+        "footer": { "type": "object" },
+        "services": { "type": "array" },
+        "blogs": { "type": "array" },
+        "trackingIds": { "type": "array" },
+        "workshopGallery": { "type": "array" }
+      }
+    },
+    "ServiceRequest": {
+      "title": "Service Request",
+      "description": "A customer request for service or quotation",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "service": { "type": "string" },
+        "message": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "service", "date"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Admin user profile",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["admin"] },
+        "email": { "type": "string", "format": "email" }
+      },
+      "required": ["role", "email"]
+    }
+  },
+  "firestore": {
+    "/content/main": {
+      "schema": { "$ref": "#/entities/SiteContent" },
+      "description": "Singleton document storing all website content"
+    },
+    "/serviceRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/ServiceRequest" },
+      "description": "Collection of service requests submitted by users"
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Collection of users for RBAC"
+    }
+  }
+}

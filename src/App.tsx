@@ -7,6 +7,9 @@ import {
   Truck, ClipboardList, MessageSquare, Check, Calendar, Tag
 } from 'lucide-react';
 import AdminPanel from './components/AdminPanel';
+import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
+import { doc, getDoc, setDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const SiteContext = createContext<any>(null);
 
@@ -1180,20 +1183,13 @@ const Contact = () => {
     e.preventDefault();
     setStatus('submitting');
     try {
-      const response = await fetch('/api/service-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+      await addDoc(collection(db, 'serviceRequests'), {
+        ...formData,
+        date: new Date().toISOString()
       });
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ name: '', phone: '', motorType: '', issue: '' });
-        setTimeout(() => setStatus('idle'), 5000);
-      } else {
-        setStatus('error');
-      }
+      setStatus('success');
+      setFormData({ name: '', phone: '', motorType: '', issue: '' });
+      setTimeout(() => setStatus('idle'), 5000);
     } catch (error) {
       console.error('Failed to submit request', error);
       setStatus('error');
@@ -1239,9 +1235,9 @@ const Contact = () => {
                   <h4 className="text-lg font-bold text-slate-900 mb-1">{t('LINE', lang)}</h4>
                   <p className="text-slate-600 mb-3">{siteContent?.contact?.line || '@bigmotor'}</p>
                   <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} 
+                    src={siteContent?.contact?.lineQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} 
                     alt="LINE QR Code" 
-                    className="w-32 h-32 rounded-md border border-slate-200 p-2 bg-white shadow-sm"
+                    className="w-32 h-32 rounded-md border border-slate-200 p-2 bg-white shadow-sm object-contain"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -1480,8 +1476,6 @@ const FloatingButtons = () => {
 
 const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean, onClose: () => void, onLoginSuccess: (token: string) => void }) => {
   const { lang } = useContext(LanguageContext);
-  const [username, setUsername] = useState('Bigelectricmotoradmin');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -1493,21 +1487,12 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
     setError('');
     
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      
-      if (!res.ok) {
-        throw new Error('Invalid credentials');
-      }
-      
-      const data = await res.json();
-      onLoginSuccess(data.token);
+      const user = await loginWithGoogle();
+      const token = await user.getIdToken();
+      onLoginSuccess(token);
       onClose();
     } catch (err) {
-      setError(lang === 'en' ? 'Invalid credentials' : 'ข้อมูลรับรองไม่ถูกต้อง');
+      setError(lang === 'en' ? 'Login failed. Please try again.' : 'เข้าสู่ระบบล้มเหลว กรุณาลองอีกครั้ง');
     } finally {
       setLoading(false);
     }
@@ -1532,29 +1517,22 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
                 {error}
               </div>
             )}
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('Username', lang)}</label>
-              <input 
-                type="text" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
-                required
-              />
+            <div className="text-center py-4">
+              <p className="text-slate-600 mb-6">
+                {lang === 'en' ? 'Sign in with your Google account to access the admin panel.' : 'ลงชื่อเข้าใช้ด้วยบัญชี Google ของคุณเพื่อเข้าถึงแผงควบคุม'}
+              </p>
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 transition flex items-center justify-center disabled:opacity-70"
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                ) : (
+                  lang === 'en' ? 'Sign in with Google' : 'ลงชื่อเข้าใช้ด้วย Google'
+                )}
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">{t('Password', lang)}</label>
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
-                required
-              />
-            </div>
-            <button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition mt-4 disabled:opacity-50">
-              {loading ? '...' : t('Login', lang)}
-            </button>
           </form>
         </div>
       </div>
@@ -1566,7 +1544,8 @@ export default function App() {
   const [siteContent, setSiteContent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
-  const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem('adminToken'));
+  const [adminUser, setAdminUser] = useState<any>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
     return (saved === 'en' || saved === 'th') ? saved : 'en';
@@ -1577,33 +1556,40 @@ export default function App() {
   }, [lang]);
 
   useEffect(() => {
-    fetch('/api/content')
-      .then(res => res.json())
-      .then(data => {
-        setSiteContent(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch site content', err);
-        setLoading(false);
-      });
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setAdminUser(user);
+      setAuthInitialized(true);
+    });
+    return () => unsubscribeAuth();
   }, []);
 
-  if (loading) {
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, 'content', 'main'), (docSnap) => {
+      if (docSnap.exists()) {
+        setSiteContent(docSnap.data());
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error('Failed to fetch site content', error);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  if (loading || !authInitialized) {
     return <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
     </div>;
   }
 
-  if (adminToken) {
+  if (adminUser) {
     return (
       <AdminPanel 
-        token={adminToken} 
+        token={adminUser.uid} 
         siteContent={siteContent} 
         onUpdateContent={setSiteContent} 
-        onLogout={() => {
-          localStorage.removeItem('adminToken');
-          setAdminToken(null);
+        onLogout={async () => {
+          await logout();
         }} 
       />
     );
@@ -1633,9 +1619,8 @@ export default function App() {
           <AdminLoginModal 
             isOpen={isAdminLoginOpen} 
             onClose={() => setIsAdminLoginOpen(false)} 
-            onLoginSuccess={(token) => {
-              localStorage.setItem('adminToken', token);
-              setAdminToken(token);
+            onLoginSuccess={() => {
+              // Auth state is handled by onAuthStateChanged
             }}
           />
         </div>
