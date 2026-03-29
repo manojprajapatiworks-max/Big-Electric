@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel';
 import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
 import { doc, getDoc, setDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { defaultContent } from './defaultContent';
 
 const SiteContext = createContext<any>(null);
 
@@ -1567,10 +1568,13 @@ export default function App() {
     const unsub = onSnapshot(doc(db, 'content', 'main'), (docSnap) => {
       if (docSnap.exists()) {
         setSiteContent(docSnap.data());
+      } else {
+        setSiteContent(defaultContent);
       }
       setLoading(false);
     }, (error) => {
       console.error('Failed to fetch site content', error);
+      setSiteContent(defaultContent);
       setLoading(false);
     });
     return () => unsub();

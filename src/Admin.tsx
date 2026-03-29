@@ -4,6 +4,7 @@ import { Save, LogOut, Plus, Trash2, Home } from 'lucide-react';
 import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { defaultContent } from './defaultContent';
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -19,9 +20,12 @@ export default function Admin() {
         const unsubDoc = onSnapshot(doc(db, 'content', 'main'), (docSnap) => {
           if (docSnap.exists()) {
             setContent(docSnap.data());
+          } else {
+            setContent(defaultContent);
           }
         }, (err) => {
           console.error("Error fetching content:", err);
+          setContent(defaultContent);
           setError("Failed to load content. You might not have permission.");
         });
         return () => unsubDoc();
