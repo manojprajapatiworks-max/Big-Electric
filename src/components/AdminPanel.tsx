@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check } from 'lucide-react';
+import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check, Download } from 'lucide-react';
 import { db } from '../firebase';
 import { doc, setDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
 
@@ -9,6 +9,12 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   const [errorMessage, setErrorMessage] = useState('');
   const [activeTab, setActiveTab] = useState('hero');
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [confirmDialog, setConfirmDialog] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void}>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
   useEffect(() => {
     // Deep copy to avoid mutating original state directly before saving
@@ -30,12 +36,21 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   }, [activeTab]);
 
   const handleDeleteServiceRequest = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this request?')) return;
-    try {
-      await deleteDoc(doc(db, 'serviceRequests', id));
-    } catch (error) {
-      console.error('Failed to delete service request', error);
-    }
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Service Request',
+      message: 'Are you sure you want to delete this service request? This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          await deleteDoc(doc(db, 'serviceRequests', id));
+        } catch (error) {
+          console.error('Failed to delete service request', error);
+          setErrorMessage('Failed to delete service request');
+          setStatus('error');
+          setTimeout(() => setStatus('idle'), 3000);
+        }
+      }
+    });
   };
 
   const handleSave = async () => {
@@ -112,11 +127,63 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   };
 
   const removeArrayItem = (section: string, index: number) => {
-    setContent((prev: any) => {
-      const newArray = [...prev[section]];
-      newArray.splice(index, 1);
-      return { ...prev, [section]: newArray };
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Item',
+      message: 'Are you sure you want to delete this item? This action cannot be undone.',
+      onConfirm: () => {
+        setContent((prev: any) => {
+          const newArray = [...prev[section]];
+          newArray.splice(index, 1);
+          return { ...prev, [section]: newArray };
+        });
+      }
     });
+  };
+
+  const exportToCSV = (filename: string, rows: any[]) => {
+    if (!rows || !rows.length) {
+      setErrorMessage("No data to export");
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 3000);
+      return;
+    }
+    const separator = ',';
+    const keys = Object.keys(rows[0]);
+    const csvContent =
+      keys.join(separator) +
+      '\n' +
+      rows.map(row => {
+        return keys.map(k => {
+          let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+          cell = cell instanceof Date ? cell.toLocaleString() : cell.toString().replace(/"/g, '""');
+          if (cell.search(/("|,|\n)/g) >= 0) {
+            cell = `"${cell}"`;
+          }
+          return cell;
+        }).join(separator);
+      }).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const exportTrackingIds = () => {
+    const data = content?.trackingIds || [];
+    exportToCSV('tracking_ids_backup.csv', data);
+  };
+
+  const exportServiceRequests = () => {
+    exportToCSV('service_requests_backup.csv', serviceRequests);
   };
 
   if (!content) return <div className="p-8 text-center">Loading editor...</div>;
@@ -139,6 +206,32 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
+      {confirmDialog.isOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{confirmDialog.title}</h3>
+            <p className="text-slate-600 mb-6">{confirmDialog.message}</p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-md transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  confirmDialog.onConfirm();
+                  setConfirmDialog({ ...confirmDialog, isOpen: false });
+                }}
+                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-md transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center z-10">
         <h1 className="text-xl font-bold flex items-center">
           <span className="text-orange-500 mr-2">⚡</span> BIG MOTOR Admin Panel
@@ -795,6 +888,15 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
               {/* TRACKING IDS SECTION */}
               {activeTab === 'trackingIds' && (
                 <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium text-slate-900">Tracking IDs</h3>
+                    <button
+                      onClick={exportTrackingIds}
+                      className="flex items-center px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-700 transition text-sm"
+                    >
+                      <Download className="w-4 h-4 mr-2" /> Export to CSV
+                    </button>
+                  </div>
                   {(content.trackingIds || []).map((tracking: any, idx: number) => (
                     <div key={idx} className="p-4 border border-slate-200 rounded-lg bg-slate-50 relative group">
                       <button 
@@ -845,6 +947,12 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-medium text-slate-900">Service Requests</h3>
+                    <button
+                      onClick={exportServiceRequests}
+                      className="flex items-center px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-700 transition text-sm"
+                    >
+                      <Download className="w-4 h-4 mr-2" /> Export to CSV
+                    </button>
                   </div>
                   
                   {serviceRequests.length === 0 ? (
