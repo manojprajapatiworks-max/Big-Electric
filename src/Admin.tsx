@@ -212,10 +212,11 @@ export default function Admin() {
                       setContent({...content, trackingIds: newTrackingIds});
                     }} className="w-full border rounded px-3 py-2">
                       <option>Received</option>
-                      <option>Inspecting</option>
+                      <option>Inspection</option>
                       <option>Rewinding</option>
                       <option>Testing</option>
                       <option>Ready</option>
+                      <option>Delivered</option>
                     </select>
                   </div>
                   <div className="w-1/3">

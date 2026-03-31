@@ -101,10 +101,11 @@ const t = (key: string, lang: Language) => {
     'We will contact you shortly.': { en: 'We will contact you shortly.', th: 'เราจะติดต่อกลับในไม่ช้า' },
     '#1 Industrial Motor Specialists': { en: '#1 Industrial Motor Specialists', th: 'ผู้เชี่ยวชาญมอเตอร์อุตสาหกรรมอันดับ 1' },
     'Received': { en: 'Received', th: 'รับเครื่อง' },
-    'Inspecting': { en: 'Inspecting', th: 'กำลังตรวจสอบ' },
+    'Inspection': { en: 'Inspection', th: 'กำลังตรวจสอบ' },
     'Rewinding': { en: 'Rewinding', th: 'กำลังพันขดลวด' },
     'Testing': { en: 'Testing', th: 'กำลังทดสอบ' },
     'Ready': { en: 'Ready', th: 'พร้อมส่งมอบ' },
+    'Delivered': { en: 'Delivered', th: 'ส่งมอบแล้ว' },
     'Name / Company': { en: 'Name / Company', th: 'ชื่อ / บริษัท' },
     'Phone': { en: 'Phone', th: 'เบอร์โทรศัพท์' },
     'Issue Description': { en: 'Issue Description', th: 'รายละเอียดปัญหา' },
@@ -922,7 +923,7 @@ const Tracking = () => {
     }, 800);
   };
 
-  const stages = ['Received', 'Inspecting', 'Rewinding', 'Testing', 'Ready'];
+  const stages = ['Received', 'Inspection', 'Rewinding', 'Testing', 'Ready', 'Delivered'];
   const currentStageIndex = trackingData ? stages.indexOf(trackingData.status) : -1;
   const progressPercentage = currentStageIndex >= 0 ? (currentStageIndex / (stages.length - 1)) * 100 : 0;
 

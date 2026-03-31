@@ -915,42 +915,76 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       <Download className="w-4 h-4 mr-2" /> Export to CSV
                     </button>
                   </div>
-                  {(content.trackingIds || []).map((tracking: any, idx: number) => (
-                    <div key={idx} className="p-4 border border-slate-200 rounded-lg bg-slate-50 relative group">
-                      <button 
-                        onClick={() => removeArrayItem('trackingIds', idx)}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
-                        title="Remove Tracking ID"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pr-8">
-                        <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Tracking ID</label>
-                          <input type="text" value={tracking.id || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'id', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
-                          <select 
-                            value={tracking.status || ''} 
-                            onChange={(e) => handleArrayChange('trackingIds', idx, 'status', e.target.value)} 
-                            className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
-                          >
-                            <option value="Received">Received</option>
-                            <option value="Inspection">Inspection</option>
-                            <option value="Rewinding">Rewinding</option>
-                            <option value="Testing">Testing</option>
-                            <option value="Ready">Ready</option>
-                            <option value="Delivered">Delivered</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-slate-500 mb-1">Est. Completion Date</label>
-                          <input type="text" value={tracking.completionDate || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'completionDate', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {(() => {
+                    const trackingIds = content.trackingIds || [];
+                    const idCounts = trackingIds.reduce((acc: any, curr: any) => {
+                      if (curr.id) {
+                        acc[curr.id] = (acc[curr.id] || 0) + 1;
+                      }
+                      return acc;
+                    }, {});
+                    
+                    const hasDuplicates = Object.values(idCounts).some((count: any) => count > 1);
+
+                    return (
+                      <>
+                        {hasDuplicates && (
+                          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                            <div className="flex">
+                              <div className="flex-shrink-0">
+                                <AlertCircle className="h-5 w-5 text-red-400" />
+                              </div>
+                              <div className="ml-3">
+                                <p className="text-sm text-red-700 font-medium">
+                                  Duplicate Tracking IDs found! Please correct the highlighted rows below.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {trackingIds.map((tracking: any, idx: number) => {
+                          const isDuplicate = tracking.id && idCounts[tracking.id] > 1;
+                          return (
+                            <div key={idx} className={`p-4 border ${isDuplicate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} rounded-lg relative group`}>
+                              <button 
+                                onClick={() => removeArrayItem('trackingIds', idx)}
+                                className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                                title="Remove Tracking ID"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pr-8">
+                                <div>
+                                  <label className={`block text-xs font-medium mb-1 ${isDuplicate ? 'text-red-600' : 'text-slate-500'}`}>Tracking ID</label>
+                                  <input type="text" value={tracking.id || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'id', e.target.value)} className={`w-full border rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500 ${isDuplicate ? 'border-red-300 bg-red-50 text-red-900' : 'border-slate-300'}`} />
+                                  {isDuplicate && <p className="mt-1 text-xs text-red-600">This ID is duplicated.</p>}
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
+                                  <select 
+                                    value={tracking.status || ''} 
+                                    onChange={(e) => handleArrayChange('trackingIds', idx, 'status', e.target.value)} 
+                                    className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
+                                  >
+                                    <option value="Received">Received</option>
+                                    <option value="Inspection">Inspection</option>
+                                    <option value="Rewinding">Rewinding</option>
+                                    <option value="Testing">Testing</option>
+                                    <option value="Ready">Ready</option>
+                                    <option value="Delivered">Delivered</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-500 mb-1">Est. Completion Date</label>
+                                  <input type="text" value={tracking.completionDate || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'completionDate', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
                   <button 
                     onClick={() => addArrayItem('trackingIds', { id: `EMS-${Math.floor(100000 + Math.random() * 900000)}`, status: 'Received', completionDate: 'TBD' })}
                     className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:text-orange-600 hover:border-orange-500 hover:bg-orange-50 transition flex items-center justify-center font-medium"
