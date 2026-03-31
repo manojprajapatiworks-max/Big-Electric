@@ -92,7 +92,7 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
       if (!newContent.calculator.pricing) {
         newContent.calculator.pricing = {
           motor: { basePricePerKw: 500, voltageMultipliers: { "220V": 1.0, "380V": 1.2, "400V": 1.25, "440V": 1.3, "High Voltage": 2.0 } },
-          housing: { basePricePerMm: 10, minPrice: 1000 }
+          housing: { basePricePerMm: 10, basePricePerMm_aluminum: 12, basePricePerMm_stainlessSteel: 15, minPrice: 1000 }
         };
       }
       
@@ -461,11 +461,29 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                         <h4 className="font-bold text-slate-800 mb-4">Housing Repair</h4>
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per mm of ID (THB)</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per mm of ID - Cast Iron (THB)</label>
                             <input 
                               type="number" 
                               value={content.calculator?.pricing?.housing?.basePricePerMm || 10} 
                               onChange={(e) => handlePricingChange('housing', 'basePricePerMm', parseFloat(e.target.value))} 
+                              className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per mm of ID - Aluminum (THB)</label>
+                            <input 
+                              type="number" 
+                              value={content.calculator?.pricing?.housing?.basePricePerMm_aluminum || 12} 
+                              onChange={(e) => handlePricingChange('housing', 'basePricePerMm_aluminum', parseFloat(e.target.value))} 
+                              className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Base Price per mm of ID - Stainless Steel (THB)</label>
+                            <input 
+                              type="number" 
+                              value={content.calculator?.pricing?.housing?.basePricePerMm_stainlessSteel || 15} 
+                              onChange={(e) => handlePricingChange('housing', 'basePricePerMm_stainlessSteel', parseFloat(e.target.value))} 
                               className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
                             />
                           </div>

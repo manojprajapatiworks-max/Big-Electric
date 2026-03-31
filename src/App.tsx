@@ -547,6 +547,7 @@ const Calculator = () => {
   const [motorKw, setMotorKw] = useState('');
   const [motorVoltage, setMotorVoltage] = useState('380V');
   const [housingId, setHousingId] = useState('');
+  const [housingType, setHousingType] = useState('Standard Cast Iron');
 
   const handleCalculate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -564,6 +565,8 @@ const Calculator = () => {
       },
       housing: {
         basePricePerMm: 10,
+        basePricePerMm_aluminum: 12,
+        basePricePerMm_stainlessSteel: 15,
         minPrice: 1000
       }
     };
@@ -584,7 +587,15 @@ const Calculator = () => {
       });
     } else {
       const id = parseFloat(housingId) || 0;
-      estimatedCost = id * pricing.housing.basePricePerMm;
+      
+      let rate = pricing.housing.basePricePerMm;
+      if (housingType === 'Aluminum') {
+        rate = pricing.housing.basePricePerMm_aluminum || pricing.housing.basePricePerMm;
+      } else if (housingType === 'Stainless Steel') {
+        rate = pricing.housing.basePricePerMm_stainlessSteel || pricing.housing.basePricePerMm;
+      }
+      
+      estimatedCost = id * rate;
       if (id > 0 && estimatedCost < pricing.housing.minPrice) estimatedCost = pricing.housing.minPrice;
       
       setResult({
@@ -706,10 +717,14 @@ const Calculator = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">{t('Housing Type', lang)}</label>
-                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
-                      <option>{t('Standard Cast Iron', lang)}</option>
-                      <option>{t('Aluminum', lang)}</option>
-                      <option>{t('Stainless Steel', lang)}</option>
+                    <select 
+                      value={housingType}
+                      onChange={(e) => setHousingType(e.target.value)}
+                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500"
+                    >
+                      <option value="Standard Cast Iron">{t('Standard Cast Iron', lang)}</option>
+                      <option value="Aluminum">{t('Aluminum', lang)}</option>
+                      <option value="Stainless Steel">{t('Stainless Steel', lang)}</option>
                     </select>
                   </div>
                 </div>
