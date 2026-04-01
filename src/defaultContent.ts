@@ -41,6 +41,8 @@ export const defaultContent = {
       },
       housing: {
         basePricePerMm: 10,
+        basePricePerMm_aluminum: 12,
+        basePricePerMm_stainlessSteel: 15,
         minPrice: 1000
       }
     }

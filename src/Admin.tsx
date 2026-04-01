@@ -73,7 +73,7 @@ export default function Admin() {
         <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-md w-96">
           <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
           {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
-          <button type="submit" className="w-full bg-orange-500 text-white font-bold py-3 rounded hover:bg-orange-600 transition">Sign in with Google</button>
+          <button type="submit" className="w-full bg-cyan-500 text-white font-bold py-3 rounded hover:bg-cyan-600 transition">Sign in with Google</button>
         </form>
       </div>
     );
@@ -90,7 +90,7 @@ export default function Admin() {
             <button onClick={() => navigate('/')} className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded flex items-center font-medium transition">
               <Home className="w-4 h-4 mr-2" /> View Site
             </button>
-            <button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded flex items-center font-medium transition">
+            <button onClick={handleSave} disabled={saving} className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded flex items-center font-medium transition">
               <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
             </button>
             <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded flex items-center font-medium transition">
@@ -188,6 +188,43 @@ export default function Admin() {
             </div>
           </section>
 
+          {/* Pricing Section */}
+          <section>
+            <h2 className="text-xl font-bold border-b pb-2 mb-4">Pricing Configuration</h2>
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-lg mb-3">Motor Rewinding</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Base Price per kW (฿)</label>
+                    <input type="number" value={content.calculator?.pricing?.motor?.basePricePerKw || 500} onChange={e => setContent({...content, calculator: {...content.calculator, pricing: {...content.calculator?.pricing, motor: {...content.calculator?.pricing?.motor, basePricePerKw: Number(e.target.value)}}}})} className="w-full border rounded px-3 py-2" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-3">Housing Repair</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Standard Cast Iron (฿/mm)</label>
+                    <input type="number" value={content.calculator?.pricing?.housing?.basePricePerMm || 10} onChange={e => setContent({...content, calculator: {...content.calculator, pricing: {...content.calculator?.pricing, housing: {...content.calculator?.pricing?.housing, basePricePerMm: Number(e.target.value)}}}})} className="w-full border rounded px-3 py-2" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Aluminum (฿/mm)</label>
+                    <input type="number" value={content.calculator?.pricing?.housing?.basePricePerMm_aluminum || 12} onChange={e => setContent({...content, calculator: {...content.calculator, pricing: {...content.calculator?.pricing, housing: {...content.calculator?.pricing?.housing, basePricePerMm_aluminum: Number(e.target.value)}}}})} className="w-full border rounded px-3 py-2" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Stainless Steel (฿/mm)</label>
+                    <input type="number" value={content.calculator?.pricing?.housing?.basePricePerMm_stainlessSteel || 15} onChange={e => setContent({...content, calculator: {...content.calculator, pricing: {...content.calculator?.pricing, housing: {...content.calculator?.pricing?.housing, basePricePerMm_stainlessSteel: Number(e.target.value)}}}})} className="w-full border rounded px-3 py-2" />
+                  </div>
+                  <div className="col-span-3">
+                    <label className="block text-sm font-medium mb-1">Minimum Price (฿)</label>
+                    <input type="number" value={content.calculator?.pricing?.housing?.minPrice || 1000} onChange={e => setContent({...content, calculator: {...content.calculator, pricing: {...content.calculator?.pricing, housing: {...content.calculator?.pricing?.housing, minPrice: Number(e.target.value)}}}})} className="w-full border rounded px-3 py-2" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Tracking Section */}
           <section>
             <div className="flex justify-between items-center border-b pb-2 mb-4">
@@ -197,43 +234,66 @@ export default function Admin() {
                 if (id) {
                   setContent({...content, trackingIds: [...(content.trackingIds || []), { id, status: 'Received', completionDate: 'TBD' }]});
                 }
-              }} className="text-orange-500 hover:text-orange-600 flex items-center text-sm font-medium">
+              }} className="text-cyan-500 hover:text-cyan-600 flex items-center text-sm font-medium">
                 <Plus className="w-4 h-4 mr-1" /> Add Tracking ID
               </button>
             </div>
             <div className="space-y-4">
-              {(content.trackingIds || []).map((data: any, index: number) => (
-                <div key={data.id} className="flex items-center space-x-4 bg-slate-50 p-4 rounded border">
-                  <div className="w-1/4 font-bold">{data.id}</div>
-                  <div className="w-1/3">
-                    <select value={data.status} onChange={e => {
-                      const newTrackingIds = [...content.trackingIds];
-                      newTrackingIds[index].status = e.target.value;
-                      setContent({...content, trackingIds: newTrackingIds});
-                    }} className="w-full border rounded px-3 py-2">
-                      <option>Received</option>
-                      <option>Inspection</option>
-                      <option>Rewinding</option>
-                      <option>Testing</option>
-                      <option>Ready</option>
-                      <option>Delivered</option>
-                    </select>
-                  </div>
-                  <div className="w-1/3">
-                    <input type="text" value={data.completionDate} onChange={e => {
-                      const newTrackingIds = [...content.trackingIds];
-                      newTrackingIds[index].completionDate = e.target.value;
-                      setContent({...content, trackingIds: newTrackingIds});
-                    }} placeholder="Est. Completion" className="w-full border rounded px-3 py-2" />
-                  </div>
-                  <button onClick={() => {
-                    const newTrackingIds = content.trackingIds.filter((_: any, i: number) => i !== index);
-                    setContent({...content, trackingIds: newTrackingIds});
-                  }} className="text-red-500 hover:text-red-700 p-2">
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
+              {(() => {
+                const trackingIds = content.trackingIds || [];
+                const idCounts = trackingIds.reduce((acc: any, curr: any) => {
+                  acc[curr.id] = (acc[curr.id] || 0) + 1;
+                  return acc;
+                }, {});
+
+                return trackingIds.map((data: any, index: number) => {
+                  const isDuplicate = idCounts[data.id] > 1;
+                  return (
+                    <div key={`${data.id}-${index}`} className={`flex items-center space-x-4 p-4 rounded border ${isDuplicate ? 'bg-red-50 border-red-300' : 'bg-slate-50'}`}>
+                      <div className="w-1/4 font-bold flex flex-col">
+                        <input 
+                          type="text" 
+                          value={data.id} 
+                          onChange={e => {
+                            const newTrackingIds = [...content.trackingIds];
+                            newTrackingIds[index].id = e.target.value;
+                            setContent({...content, trackingIds: newTrackingIds});
+                          }} 
+                          className={`w-full border rounded px-3 py-2 ${isDuplicate ? 'border-red-300 bg-white' : 'bg-transparent border-transparent hover:border-slate-300 focus:border-slate-300 focus:bg-white'}`}
+                        />
+                        {isDuplicate && <span className="text-xs text-red-500 font-normal mt-1">Duplicate ID. Please correct.</span>}
+                      </div>
+                      <div className="w-1/3">
+                        <select value={data.status} onChange={e => {
+                          const newTrackingIds = [...content.trackingIds];
+                          newTrackingIds[index].status = e.target.value;
+                          setContent({...content, trackingIds: newTrackingIds});
+                        }} className="w-full border rounded px-3 py-2">
+                          <option>Received</option>
+                          <option>Inspection</option>
+                          <option>Rewinding</option>
+                          <option>Testing</option>
+                          <option>Ready</option>
+                          <option>Delivered</option>
+                        </select>
+                      </div>
+                      <div className="w-1/3">
+                        <input type="text" value={data.completionDate} onChange={e => {
+                          const newTrackingIds = [...content.trackingIds];
+                          newTrackingIds[index].completionDate = e.target.value;
+                          setContent({...content, trackingIds: newTrackingIds});
+                        }} placeholder="Est. Completion" className="w-full border rounded px-3 py-2" />
+                      </div>
+                      <button onClick={() => {
+                        const newTrackingIds = content.trackingIds.filter((_: any, i: number) => i !== index);
+                        setContent({...content, trackingIds: newTrackingIds});
+                      }} className="text-red-500 hover:text-red-700 p-2">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  );
+                });
+              })()}
               {(!content.trackingIds || content.trackingIds.length === 0) && (
                 <p className="text-slate-500 italic">No tracking IDs found.</p>
               )}

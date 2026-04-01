@@ -205,26 +205,26 @@ const Header = () => {
   const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-50">
       {/* Top Bar */}
-      <div className="bg-slate-900 text-white py-2 px-4 text-sm hidden md:block">
+      <div className="bg-gradient-to-r from-slate-900 to-blue-950 text-white py-2 px-4 text-sm hidden md:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <span className="flex items-center"><Phone className="w-4 h-4 mr-2" /> {siteContent?.contact?.phone || '+66 94 260 8244'}</span>
-            <span className="flex items-center"><MessageCircle className="w-4 h-4 mr-2" /> LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
+          <div className="flex items-center space-x-6">
+            <span className="flex items-center text-slate-300 hover:text-white transition-colors"><Phone className="w-4 h-4 mr-2 text-blue-400" /> {siteContent?.contact?.phone || '+66 94 260 8244'}</span>
+            <span className="flex items-center text-slate-300 hover:text-white transition-colors"><MessageCircle className="w-4 h-4 mr-2 text-[#00B900]" /> LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <Globe className="w-4 h-4 mr-1 text-slate-400" />
-            <div className="flex bg-slate-800 rounded-md p-0.5">
+            <div className="flex bg-slate-800/50 rounded-lg p-1 border border-slate-700">
               <button 
                 onClick={() => setLang('en')} 
-                className={`px-3 py-1 text-xs font-bold rounded-sm transition ${lang === 'en' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${lang === 'en' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
               >
                 EN
               </button>
               <button 
                 onClick={() => setLang('th')} 
-                className={`px-3 py-1 text-xs font-bold rounded-sm transition ${lang === 'th' ? 'bg-orange-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${lang === 'th' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
               >
                 TH
               </button>
@@ -247,8 +247,8 @@ const Header = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-2xl font-bold text-slate-900 flex items-center">
-                <Zap className="w-8 h-8 text-orange-500 mr-2" />
+              <div className="text-2xl font-extrabold text-slate-800 flex items-center tracking-tight">
+                <Zap className="w-8 h-8 text-blue-500 mr-2" />
                 <span className="hidden sm:block lg:hidden xl:block">{companyName}</span>
                 <span className="block sm:hidden lg:block xl:hidden">{companyNameShort}</span>
               </div>
@@ -265,27 +265,28 @@ const Header = () => {
                 key={item} 
                 href={`#${sectionId}`} 
                 onClick={(e) => scrollToSection(e, sectionId)}
-                className={`font-medium transition text-sm xl:text-base ${isActive ? 'text-orange-500' : 'text-slate-700 hover:text-orange-500'}`}
+                className={`font-bold transition-colors text-sm xl:text-base relative group ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-800'}`}
               >
                 {t(item, lang)}
+                <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 transform origin-left transition-transform duration-300 ${isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
               </a>
             )})}
           </nav>
 
           {/* CTA Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
-            <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center text-slate-900 font-bold hover:text-orange-500 transition">
+            <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center text-slate-800 font-bold hover:text-blue-600 transition-colors">
               <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}
             </a>
-            <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="bg-[#00B900] hover:bg-[#009900] text-white px-4 py-2 rounded-md font-medium flex items-center transition shadow-sm">
+            <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="bg-[#00B900] hover:bg-[#009900] text-white px-6 py-2.5 rounded-full font-bold flex items-center transition-all hover:scale-105 shadow-md shadow-[#00B900]/20">
               <MessageCircle className="w-5 h-5 mr-2" /> {t('LINE Chat', lang)}
             </button>
           </div>
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-700 hover:text-orange-500">
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-800 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-slate-50">
+              {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
             </button>
           </div>
         </div>
@@ -293,8 +294,8 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="lg:hidden bg-white border-t border-slate-50 shadow-xl absolute w-full">
+          <div className="px-4 pt-4 pb-6 space-y-2">
             {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
               const sectionId = item.toLowerCase().replace(' ', '-');
               const isActive = activeSection === sectionId;
@@ -303,33 +304,33 @@ const Header = () => {
                 key={item} 
                 href={`#${sectionId}`} 
                 onClick={(e) => scrollToSection(e, sectionId)}
-                className={`block px-3 py-2 text-base font-medium rounded-md transition ${isActive ? 'text-orange-500 bg-orange-50' : 'text-slate-700 hover:text-orange-500 hover:bg-slate-50'}`}
+                className={`block px-4 py-3 text-base font-bold rounded-xl transition-all ${isActive ? 'text-blue-600 bg-blue-50' : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'}`}
               >
                 {t(item, lang)}
               </a>
             )})}
-            <div className="mt-4 px-3 flex flex-col space-y-2 border-t pt-4">
-              <div className="flex items-center justify-between mb-2 px-1">
-                <span className="text-sm font-medium text-slate-500 uppercase">{t('Language', lang)}</span>
-                <div className="flex space-x-2">
+            <div className="mt-6 flex flex-col space-y-3 border-t border-slate-50 pt-6">
+              <div className="flex items-center justify-between mb-2 px-2">
+                <span className="text-sm font-bold text-slate-800 uppercase tracking-wider">{t('Language', lang)}</span>
+                <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg">
                   <button 
                     onClick={() => setLang('en')} 
-                    className={`px-3 py-1 text-sm font-medium rounded-md transition ${lang === 'en' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all ${lang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                   >
                     EN
                   </button>
                   <button 
                     onClick={() => setLang('th')} 
-                    className={`px-3 py-1 text-sm font-medium rounded-md transition ${lang === 'th' ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all ${lang === 'th' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
                   >
                     TH
                   </button>
                 </div>
               </div>
-              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center justify-center w-full bg-slate-900 text-white px-4 py-2 rounded-md font-medium">
+              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center justify-center w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3.5 rounded-xl font-bold transition-colors shadow-md">
                 <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}: {siteContent?.contact?.phone || '+66 94 260 8244'}
               </a>
-              <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="flex items-center justify-center w-full bg-[#00B900] text-white px-4 py-2 rounded-md font-medium">
+              <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="flex items-center justify-center w-full bg-[#00B900] hover:bg-[#009900] text-white px-4 py-3.5 rounded-xl font-bold transition-colors shadow-md">
                 <MessageCircle className="w-5 h-5 mr-2" /> {t('LINE Chat', lang)}
               </button>
             </div>
@@ -349,53 +350,55 @@ const Hero = () => {
   const bgImage = siteContent?.hero?.bgImage || "https://picsum.photos/seed/factory/1920/1080";
 
   return (
-    <section id="home" className="relative bg-slate-900 text-white">
+    <section id="home" className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 text-white">
       <div className="absolute inset-0 overflow-hidden">
         <img 
           src={bgImage} 
           alt="Electric motor repair workshop" 
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-20 mix-blend-overlay"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-blue-900/70 to-transparent"></div>
       </div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div className="max-w-3xl">
-          <span className="inline-block py-1 px-3 rounded-full bg-orange-500/20 text-orange-400 font-semibold text-sm mb-6 border border-orange-500/30">
+          <span className="inline-block py-1.5 px-4 rounded-full bg-white/10 backdrop-blur-md text-blue-300 font-semibold text-sm mb-6 border border-white/20 shadow-lg">
             {t('#1 Industrial Motor Specialists', lang)}
           </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
             {lang === 'en' ? headline.split('Repair & Rewinding').map((part: string, i: number, arr: string[]) => 
               <React.Fragment key={i}>
                 {part}
-                {i < arr.length - 1 && <span className="text-orange-500">Repair & Rewinding</span>}
+                {i < arr.length - 1 && <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Repair & Rewinding</span>}
               </React.Fragment>
             ) : headline}
           </h1>
-          <p className="text-xl md:text-2xl text-slate-300 mb-10 max-w-2xl">
+          <p className="text-xl md:text-2xl text-slate-200 mb-10 max-w-2xl font-light">
             {subheadline}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 mb-10">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
+            <button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all hover:scale-105 shadow-xl shadow-blue-500/30 flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
               {t('Request Repair Service', lang)} <ArrowRight className="ml-2 w-5 h-5" />
             </button>
-            <button className="bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-md font-bold text-lg transition shadow-lg flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
+            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold text-lg transition-all hover:scale-105 shadow-xl flex items-center justify-center" onClick={(e) => scrollToSectionHelper(e, 'contact')}>
               {t('Get Repair Quotation', lang)}
             </button>
           </div>
           
           <div className="flex items-center space-x-6 text-slate-300">
             <div className="flex items-center">
-              <Phone className="w-6 h-6 text-orange-500 mr-3" />
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mr-4 backdrop-blur-sm border border-white/20">
+                <Phone className="w-6 h-6 text-blue-400" />
+              </div>
               <div>
-                <p className="text-sm">{t('24/7 Emergency Service', lang)}</p>
+                <p className="text-sm uppercase tracking-wider font-semibold text-slate-400">{t('24/7 Emergency Service', lang)}</p>
                 <p className="text-xl font-bold text-white">{siteContent?.hero?.phone || '+66 94 260 8244'}</p>
               </div>
             </div>
-            <div className="hidden sm:block h-10 w-px bg-slate-700"></div>
-            <button className="hidden sm:flex items-center text-sm hover:text-white transition underline underline-offset-4" onClick={(e) => scrollToSectionHelper(e, 'booking')}>
+            <div className="hidden sm:block h-12 w-px bg-white/20"></div>
+            <button className="hidden sm:flex items-center text-sm hover:text-white transition underline underline-offset-4 font-medium" onClick={(e) => scrollToSectionHelper(e, 'booking')}>
               {t('Calculate Rewinding Cost', lang)}
             </button>
           </div>
@@ -409,17 +412,17 @@ const TrustSection = () => {
   const siteContent = useContext(SiteContext);
   const { lang } = useContext(LanguageContext);
   return (
-    <section id="about" className="bg-white py-12 border-b border-slate-200">
+    <section id="about" className="bg-slate-50 py-12 border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {[
-            { icon: <ShieldCheck className="w-6 h-6 text-orange-500" />, text: "Experienced motor technicians" },
-            { icon: <Clock className="w-6 h-6 text-orange-500" />, text: "Fast repair turnaround" },
-            { icon: <Factory className="w-6 h-6 text-orange-500" />, text: "Industrial motor specialists" },
-            { icon: <MapPin className="w-6 h-6 text-orange-500" />, text: "Service across Chon Buri region" }
+            { icon: <ShieldCheck className="w-6 h-6 text-blue-500" />, text: "Experienced motor technicians" },
+            { icon: <Clock className="w-6 h-6 text-blue-500" />, text: "Fast repair turnaround" },
+            { icon: <Factory className="w-6 h-6 text-blue-500" />, text: "Industrial motor specialists" },
+            { icon: <MapPin className="w-6 h-6 text-blue-500" />, text: "Service across Chon Buri region" }
           ].map((item, idx) => (
-            <div key={idx} className="flex items-center space-x-3 bg-slate-50 p-4 rounded-lg border border-slate-100">
-              {item.icon}
+            <div key={idx} className="flex items-center space-x-3 bg-white p-4 rounded-2xl shadow-sm border border-slate-50 hover:shadow-md transition-shadow">
+              <div className="bg-blue-50 p-2 rounded-xl">{item.icon}</div>
               <span className="font-medium text-slate-800">{t(item.text, lang)}</span>
             </div>
           ))}
@@ -427,16 +430,16 @@ const TrustSection = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200">
           <div className="py-4">
-            <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.yearsExperience || '10'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.yearsExperienceLabel_th ? siteContent.stats.yearsExperienceLabel_th : (siteContent?.stats?.yearsExperienceLabel || t('Years Experience', lang))}</p>
+            <p className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-cyan-700 mb-2">{siteContent?.stats?.yearsExperience || '10'}<span className="text-blue-500">+</span></p>
+            <p className="text-blue-600 font-bold uppercase tracking-wider text-sm">{lang === 'th' && siteContent?.stats?.yearsExperienceLabel_th ? siteContent.stats.yearsExperienceLabel_th : (siteContent?.stats?.yearsExperienceLabel || t('Years Experience', lang))}</p>
           </div>
           <div className="py-4">
-            <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.motorsRepaired || '500'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.motorsRepairedLabel_th ? siteContent.stats.motorsRepairedLabel_th : (siteContent?.stats?.motorsRepairedLabel || t('Motors Repaired', lang))}</p>
+            <p className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-cyan-700 mb-2">{siteContent?.stats?.motorsRepaired || '500'}<span className="text-blue-500">+</span></p>
+            <p className="text-blue-600 font-bold uppercase tracking-wider text-sm">{lang === 'th' && siteContent?.stats?.motorsRepairedLabel_th ? siteContent.stats.motorsRepairedLabel_th : (siteContent?.stats?.motorsRepairedLabel || t('Motors Repaired', lang))}</p>
           </div>
           <div className="py-4">
-            <p className="text-4xl font-extrabold text-slate-900 mb-2">{siteContent?.stats?.industrialClients || '200'}<span className="text-orange-500">+</span></p>
-            <p className="text-slate-600 font-medium uppercase tracking-wide text-sm">{lang === 'th' && siteContent?.stats?.industrialClientsLabel_th ? siteContent.stats.industrialClientsLabel_th : (siteContent?.stats?.industrialClientsLabel || t('Industrial Clients', lang))}</p>
+            <p className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-cyan-700 mb-2">{siteContent?.stats?.industrialClients || '200'}<span className="text-blue-500">+</span></p>
+            <p className="text-blue-600 font-bold uppercase tracking-wider text-sm">{lang === 'th' && siteContent?.stats?.industrialClientsLabel_th ? siteContent.stats.industrialClientsLabel_th : (siteContent?.stats?.industrialClientsLabel || t('Industrial Clients', lang))}</p>
           </div>
         </div>
       </div>
@@ -468,23 +471,24 @@ const Services = () => {
   ];
 
   return (
-    <section id="services" className="py-20 bg-slate-50 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{t('Our Professional Services', lang)}</h2>
-          <p className="text-lg text-slate-600">{t('We provide comprehensive repair and maintenance solutions for all types of industrial electric motors.', lang)}</p>
+    <section id="services" className="py-24 bg-white relative">
+      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-50 to-transparent"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6">{t('Our Professional Services', lang)}</h2>
+          <p className="text-xl text-slate-600">{t('We provide comprehensive repair and maintenance solutions for all types of industrial electric motors.', lang)}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {servicesList.map((service: any, idx: number) => (
-            <div key={idx} className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition border border-slate-100 group">
-              <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-6 group-hover:bg-orange-500 group-hover:text-white transition">
+            <div key={idx} className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 border border-slate-50 group hover:-translate-y-2">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-600 rounded-2xl flex items-center justify-center mb-8 group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white transition-all duration-300 shadow-sm">
                 {icons[idx % icons.length]}
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">{lang === 'th' && service.title_th ? service.title_th : (t(service.title, lang) || service.title)}</h3>
-              <p className="text-slate-600 mb-6 line-clamp-2">{lang === 'th' && service.desc_th ? service.desc_th : (t(service.desc, lang) || service.desc)}</p>
-              <button onClick={() => setSelectedService(service)} className="text-orange-600 font-semibold flex items-center hover:text-orange-700 transition">
-                {t('Learn More', lang)} <ChevronRight className="w-4 h-4 ml-1" />
+              <h3 className="text-2xl font-bold text-slate-800 mb-4">{lang === 'th' && service.title_th ? service.title_th : (t(service.title, lang) || service.title)}</h3>
+              <p className="text-slate-600 mb-8 line-clamp-3 leading-relaxed">{lang === 'th' && service.desc_th ? service.desc_th : (t(service.desc, lang) || service.desc)}</p>
+              <button onClick={() => setSelectedService(service)} className="text-blue-600 font-bold flex items-center hover:text-pink-700 transition-colors group/btn">
+                {t('Learn More', lang)} <ChevronRight className="w-5 h-5 ml-1 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </div>
           ))}
@@ -493,30 +497,30 @@ const Services = () => {
 
       {/* Service Details Modal */}
       {selectedService && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100">
-              <h3 className="text-2xl font-bold text-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200">
+            <div className="flex justify-between items-center p-8 border-b border-slate-50 bg-slate-50">
+              <h3 className="text-2xl font-extrabold text-slate-800">
                 {lang === 'th' && selectedService.title_th ? selectedService.title_th : (t(selectedService.title, lang) || selectedService.title)}
               </h3>
               <button 
                 onClick={() => setSelectedService(null)}
-                className="text-slate-400 hover:text-slate-600 transition p-1"
+                className="text-slate-400 hover:text-blue-600 transition-colors p-2 rounded-full hover:bg-white"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto">
-              <p className="text-slate-700 text-lg leading-relaxed mb-8">
+            <div className="p-8 overflow-y-auto">
+              <p className="text-slate-700 text-lg leading-relaxed mb-10">
                 {lang === 'th' && selectedService.longDesc_th 
                   ? selectedService.longDesc_th 
                   : (selectedService.longDesc || (lang === 'th' && selectedService.desc_th ? selectedService.desc_th : (t(selectedService.desc, lang) || selectedService.desc)))}
               </p>
               
-              <div className="bg-orange-50 rounded-xl p-6 border border-orange-100 flex flex-col sm:flex-row items-center justify-between">
-                <div className="mb-4 sm:mb-0">
-                  <h4 className="font-bold text-slate-900 mb-1">{t('Need this service?', lang)}</h4>
-                  <p className="text-sm text-slate-600">{t('Contact us today for a free consultation and quote.', lang)}</p>
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 border border-blue-100 flex flex-col sm:flex-row items-center justify-between shadow-inner">
+                <div className="mb-6 sm:mb-0 text-center sm:text-left">
+                  <h4 className="font-bold text-slate-800 mb-2 text-xl">{t('Need this service?', lang)}</h4>
+                  <p className="text-slate-600">{t('Contact us today for a free consultation and quote.', lang)}</p>
                 </div>
                 <button 
                   onClick={() => {
@@ -525,7 +529,7 @@ const Services = () => {
                       scrollToSectionById('contact');
                     }, 100);
                   }}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-lg font-medium transition w-full sm:w-auto whitespace-nowrap"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-3.5 rounded-xl font-bold transition-all hover:scale-105 shadow-lg shadow-blue-500/30 w-full sm:w-auto whitespace-nowrap"
                 >
                   {t('Request Service', lang)}
                 </button>
@@ -611,51 +615,51 @@ const Calculator = () => {
   const features = lang === 'th' && siteContent?.calculator?.features_th ? siteContent.calculator.features_th : (siteContent?.calculator?.features || ['Transparent pricing structure', 'No hidden fees', 'Free detailed quotation available']);
 
   return (
-    <section id="booking" className="py-20 bg-slate-900 text-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-orange-500 rounded-full opacity-10 blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-500 rounded-full opacity-10 blur-3xl"></div>
+    <section id="booking" className="py-24 bg-slate-900 text-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-blue-500 rounded-full opacity-20 blur-[100px]"></div>
+      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-blue-500 rounded-full opacity-20 blur-[100px]"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">{title}</h2>
-            <p className="text-slate-300 text-lg mb-8">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">{title}</h2>
+            <p className="text-slate-300 text-xl mb-8 leading-relaxed font-light">
               {description}
             </p>
-            <ul className="space-y-4 mb-8">
+            <ul className="space-y-5 mb-8">
               {features.map((item: string, i: number) => (
-                <li key={i} className="flex items-center text-slate-300">
-                  <CheckCircle className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
+                <li key={i} className="flex items-center text-slate-200 text-lg">
+                  <CheckCircle className="w-6 h-6 text-blue-400 mr-4 flex-shrink-0" />
                   {lang === 'th' ? item : t(item, lang)}
                 </li>
               ))}
             </ul>
           </div>
           
-          <div className="bg-white rounded-xl p-8 shadow-2xl text-slate-900">
-            <div className="flex mb-6 border-b border-slate-200">
+          <div className="bg-white rounded-3xl p-8 md:p-10 shadow-2xl shadow-black/50 text-slate-900 border border-slate-200/10">
+            <div className="flex mb-8 border-b border-slate-200">
               <button 
                 type="button"
-                className={`pb-3 px-4 font-bold text-lg transition ${calcType === 'motor' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`pb-4 px-6 font-bold text-lg transition-all ${calcType === 'motor' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400 hover:text-slate-700'}`}
                 onClick={() => { setCalcType('motor'); setResult(null); }}
               >
                 {t('Motor Rewinding', lang)}
               </button>
               <button 
                 type="button"
-                className={`pb-3 px-4 font-bold text-lg transition ${calcType === 'housing' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`pb-4 px-6 font-bold text-lg transition-all ${calcType === 'housing' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400 hover:text-slate-700'}`}
                 onClick={() => { setCalcType('housing'); setResult(null); }}
               >
                 {t('Housing Repair', lang)}
               </button>
             </div>
             
-            <form onSubmit={handleCalculate} className="space-y-4">
+            <form onSubmit={handleCalculate} className="space-y-5">
               {calcType === 'motor' ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
-                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Motor Type', lang)}</label>
+                    <select className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50">
                       <option>{t('AC Induction Motor', lang)}</option>
                       <option>{t('DC Motor', lang)}</option>
                       <option>{t('Servo Motor', lang)}</option>
@@ -663,7 +667,7 @@ const Calculator = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Power (kW)', lang)}</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Motor Power (kW)', lang)}</label>
                     <input 
                       type="number" 
                       step="0.1"
@@ -671,16 +675,16 @@ const Calculator = () => {
                       value={motorKw}
                       onChange={(e) => setMotorKw(e.target.value)}
                       placeholder={t("e.g. 7.5", lang)} 
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" 
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Voltage', lang)}</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Voltage', lang)}</label>
                     <select 
                       value={motorVoltage}
                       onChange={(e) => setMotorVoltage(e.target.value)}
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50"
                     >
                       <option>220V</option>
                       <option>380V</option>
@@ -690,21 +694,21 @@ const Calculator = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phase', lang)}</label>
-                    <select className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500">
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Phase', lang)}</label>
+                    <select className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50">
                       <option>{t('1 Phase', lang)}</option>
                       <option>{t('3 Phase', lang)}</option>
                     </select>
                   </div>
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('RPM', lang)}</label>
-                    <input type="text" placeholder={t("e.g. 1450 RPM", lang)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('RPM', lang)}</label>
+                    <input type="text" placeholder={t("e.g. 1450 RPM", lang)} className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" />
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Inner Dia (ID) in mm', lang)}</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Inner Dia (ID) in mm', lang)}</label>
                     <input 
                       type="number" 
                       step="1"
@@ -712,16 +716,16 @@ const Calculator = () => {
                       value={housingId}
                       onChange={(e) => setHousingId(e.target.value)}
                       placeholder={t("e.g. 150", lang)} 
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" 
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Housing Type', lang)}</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{t('Housing Type', lang)}</label>
                     <select 
                       value={housingType}
                       onChange={(e) => setHousingType(e.target.value)}
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50"
                     >
                       <option value="Standard Cast Iron">{t('Standard Cast Iron', lang)}</option>
                       <option value="Aluminum">{t('Aluminum', lang)}</option>
@@ -732,20 +736,20 @@ const Calculator = () => {
               )}
               
               {!result ? (
-                <button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-md transition mt-4">
+                <button type="submit" className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/30 mt-6 text-lg">
                   {t('Calculate Estimate', lang)}
                 </button>
               ) : (
-                <div className="mt-6 bg-slate-50 border border-slate-200 rounded-lg p-6">
-                  <div className="mb-4">
-                    <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">{t('Estimated Cost', lang)}</p>
-                    <p className="text-3xl font-bold text-orange-600">{result.cost}</p>
+                <div className="mt-8 bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-8 shadow-inner">
+                  <div className="mb-6">
+                    <p className="text-sm text-blue-600 font-bold uppercase tracking-wider mb-2">{t('Estimated Cost', lang)}</p>
+                    <p className="text-4xl font-extrabold text-slate-900">{result.cost}</p>
                   </div>
                   <div className="mb-6">
-                    <p className="text-sm text-slate-500 font-medium uppercase tracking-wider mb-1">{t('Estimated Time', lang)}</p>
-                    <p className="text-xl font-semibold text-slate-800">{result.time}</p>
+                    <p className="text-sm text-blue-600 font-bold uppercase tracking-wider mb-2">{t('Estimated Time', lang)}</p>
+                    <p className="text-2xl font-bold text-slate-800">{result.time}</p>
                   </div>
-                  <button type="button" onClick={(e) => { setResult(null); scrollToSectionHelper(e, 'contact'); }} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-4 rounded-md transition">
+                  <button type="button" onClick={(e) => { setResult(null); scrollToSectionHelper(e, 'contact'); }} className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-4 rounded-md transition">
                     {t('Request Service Now', lang)}
                   </button>
                 </div>
@@ -777,40 +781,43 @@ const WhyChooseUs = () => {
   const detailsText = siteContent?.whyChooseUs?.details?.[lang] || "BIG ELECTRICMOTOR SERVICE CO., LTD. has been a trusted partner for industrial facilities across Chon Buri and Pattaya for over a decade. Our team of highly skilled technicians is dedicated to providing top-notch electric motor repair, rewinding, and maintenance services. We understand that downtime costs money, which is why we prioritize speed without compromising on quality. Equipped with modern diagnostic and repair tools, we handle everything from standard AC/DC motors to complex industrial pumps and generators. Our commitment to excellence, transparent pricing, and customer satisfaction makes us the preferred choice for businesses relying on continuous operations.";
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-24 bg-slate-50 relative overflow-hidden">
+      <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 rounded-full bg-blue-100/50 blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-96 h-96 rounded-full bg-cyan-100/50 blur-3xl pointer-events-none"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-cyan-500 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-500 opacity-20"></div>
             <img 
               src={imageUrl} 
               alt="Professional Technician" 
-              className="rounded-2xl shadow-xl"
+              className="rounded-3xl shadow-2xl relative z-10 transform group-hover:-translate-y-2 transition-transform duration-500 border border-white"
               referrerPolicy="no-referrer"
             />
           </div>
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">{heading}</h2>
-            <p className="text-lg text-slate-600 mb-8">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-tight">{heading}</h2>
+            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
               {t('We are the trusted partner for industrial facilities across Chon Buri and Pattaya. Our commitment to quality and speed ensures your operations experience minimal downtime.', lang)}
             </p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {points.map((point, idx) => (
-                <div key={idx} className="flex items-start">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center mt-1">
-                    <Check className="w-4 h-4 text-orange-600" />
+                <div key={idx} className="flex items-start group">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mt-1 group-hover:from-blue-500 group-hover:to-cyan-500 transition-colors duration-300 shadow-sm">
+                    <Check className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors" />
                   </div>
-                  <p className="ml-3 text-slate-800 font-medium">{t(point, lang)}</p>
+                  <p className="ml-4 text-slate-800 font-bold text-lg">{t(point, lang)}</p>
                 </div>
               ))}
             </div>
             
-            <div className="mt-10">
+            <div className="mt-12">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-md font-bold transition shadow-md"
+                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 shadow-xl text-lg flex items-center"
               >
-                {buttonText}
+                {buttonText} <ArrowRight className="ml-2 w-5 h-5" />
               </button>
             </div>
           </div>
@@ -819,26 +826,26 @@ const WhyChooseUs = () => {
 
       {/* Details Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100">
-              <h3 className="text-2xl font-bold text-slate-900">{heading}</h3>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-200">
+            <div className="flex justify-between items-center p-8 border-b border-slate-50 bg-slate-50">
+              <h3 className="text-2xl font-extrabold text-slate-800">{heading}</h3>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors p-2 rounded-full hover:bg-slate-100"
+                className="text-slate-400 hover:text-blue-600 transition-colors p-2 rounded-full hover:bg-white"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto">
-              <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+            <div className="p-8 overflow-y-auto">
+              <p className="text-slate-700 text-lg leading-relaxed whitespace-pre-line">
                 {detailsText}
               </p>
             </div>
-            <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+            <div className="p-6 border-t border-slate-50 bg-slate-50 flex justify-end">
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-md font-medium transition"
+                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-md"
               >
                 {t('Close', lang)}
               </button>
@@ -870,28 +877,29 @@ const Process = () => {
   ];
 
   return (
-    <section className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{t('Our Repair Process', lang)}</h2>
-          <p className="text-lg text-slate-600">{t('A systematic approach to ensure quality and reliability in every repair job.', lang)}</p>
+    <section className="py-24 bg-white relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6">{t('Our Repair Process', lang)}</h2>
+          <p className="text-xl text-slate-600">{t('A systematic approach to ensure quality and reliability in every repair job.', lang)}</p>
         </div>
         
         <div className="relative">
           {/* Connecting line for desktop */}
-          <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+          <div className="hidden md:block absolute top-12 left-0 w-full h-1 bg-gradient-to-r from-blue-100 via-cyan-100 to-blue-100 z-0"></div>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 relative z-10">
             {steps.map((step: any, idx: number) => (
-              <div key={idx} className="flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-white border-4 border-slate-100 shadow-md flex items-center justify-center text-orange-500 mb-4 relative">
-                  {icons[idx % icons.length]}
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-900 text-white rounded-full text-xs font-bold flex items-center justify-center">
+              <div key={idx} className="flex flex-col items-center text-center group">
+                <div className="w-24 h-24 rounded-3xl bg-white border border-slate-50 shadow-xl shadow-slate-200/50 flex items-center justify-center text-blue-500 mb-6 relative group-hover:-translate-y-2 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 opacity-0 group-hover:opacity-100 rounded-3xl transition-opacity duration-300"></div>
+                  <div className="relative z-10">{icons[idx % icons.length]}</div>
+                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-full text-sm font-bold flex items-center justify-center shadow-md">
                     {idx + 1}
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{lang === 'th' && step.title_th ? step.title_th : (t(step.title, lang) || step.title)}</h3>
-                <p className="text-sm text-slate-600">{lang === 'th' && step.desc_th ? step.desc_th : (t(step.desc, lang) || step.desc)}</p>
+                <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">{lang === 'th' && step.title_th ? step.title_th : (t(step.title, lang) || step.title)}</h3>
+                <p className="text-slate-600 leading-relaxed">{lang === 'th' && step.desc_th ? step.desc_th : (t(step.desc, lang) || step.desc)}</p>
               </div>
             ))}
           </div>
@@ -924,62 +932,71 @@ const Tracking = () => {
   };
 
   const stages = ['Received', 'Inspection', 'Rewinding', 'Testing', 'Ready', 'Delivered'];
-  const currentStageIndex = trackingData ? stages.indexOf(trackingData.status) : -1;
-  const progressPercentage = currentStageIndex >= 0 ? (currentStageIndex / (stages.length - 1)) * 100 : 0;
+  const currentStageIndex = trackingData ? stages.findIndex(s => s.toLowerCase() === trackingData.status?.toLowerCase()) : -1;
+  const progressPercentage = currentStageIndex >= 0 ? ((currentStageIndex) / (stages.length - 1)) * 100 : 0;
 
   return (
-    <section id="repair-status" className="py-20 bg-orange-500 text-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <ClipboardList className="w-16 h-16 mx-auto mb-6 opacity-80" />
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('Track Your Repair Status', lang)}</h2>
-        <p className="text-lg text-orange-100 mb-8">{t('Enter your Repair Tracking ID to see the current stage of your motor.', lang)}</p>
+    <section id="repair-status" className="py-24 bg-gradient-to-br from-blue-500 via-cyan-500 to-slate-800 text-white relative">
+      <div className="absolute inset-0 bg-black/10"></div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-8 border border-white/30 shadow-xl">
+          <ClipboardList className="w-12 h-12 text-white" />
+        </div>
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-6 drop-shadow-md">{t('Track Your Repair Status', lang)}</h2>
+        <p className="text-xl text-white/90 mb-10 font-medium drop-shadow">{t('Enter your Repair Tracking ID to see the current stage of your motor.', lang)}</p>
         
-        <form onSubmit={handleTrack} className="max-w-2xl mx-auto bg-white p-2 rounded-lg shadow-lg flex flex-col sm:flex-row">
+        <form onSubmit={handleTrack} className="max-w-2xl mx-auto bg-white/20 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row border border-white/30">
           <input 
             type="text" 
             placeholder={t("e.g. EMS-000245", lang)} 
-            className="flex-grow px-4 py-3 text-slate-900 focus:outline-none rounded-md"
+            className="flex-grow px-6 py-4 text-slate-900 focus:outline-none rounded-xl bg-white/90 font-medium text-lg placeholder:text-slate-400"
             value={trackingId}
             onChange={(e) => setTrackingId(e.target.value)}
           />
-          <button type="submit" className="mt-2 sm:mt-0 bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-md font-bold transition flex items-center justify-center">
-            <Search className="w-5 h-5 mr-2" /> {t('Track', lang)}
+          <button type="submit" className="mt-2 sm:mt-0 sm:ml-2 bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center justify-center shadow-lg text-lg">
+            <Search className="w-6 h-6 mr-2" /> {t('Track', lang)}
           </button>
         </form>
 
         {status === 'searching' && (
-          <div className="mt-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto"></div>
+          <div className="mt-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-white mx-auto shadow-lg"></div>
           </div>
         )}
 
         {status === 'not_found' && (
-          <div className="mt-8 bg-white text-slate-900 rounded-xl p-6 text-center shadow-xl animate-in fade-in slide-in-from-bottom-4">
-            <p className="text-lg font-bold text-red-500">{t('Tracking ID not found.', lang)}</p>
-            <p className="text-slate-600">{t('Please check the ID and try again.', lang)}</p>
+          <div className="mt-10 bg-white/95 backdrop-blur-sm text-slate-900 rounded-3xl p-8 text-center shadow-2xl animate-in fade-in slide-in-from-bottom-4 border border-white/50">
+            <p className="text-2xl font-bold text-red-500 mb-2">{t('Tracking ID not found.', lang)}</p>
+            <p className="text-slate-600 text-lg">{t('Please check the ID and try again.', lang)}</p>
           </div>
         )}
 
         {status === 'found' && trackingData && (
-          <div className="mt-8 bg-white text-slate-900 rounded-xl p-6 text-left shadow-xl animate-in fade-in slide-in-from-bottom-4">
-            <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+          <div className="mt-10 bg-white/95 backdrop-blur-sm text-slate-900 rounded-3xl p-8 text-left shadow-2xl animate-in fade-in slide-in-from-bottom-4 border border-white/50">
+            <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-6">
               <div>
-                <p className="text-sm text-slate-500 font-medium uppercase">{t('Tracking ID', lang)}</p>
-                <p className="text-xl font-bold">{trackingData.id}</p>
+                <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Tracking ID', lang)}</p>
+                <p className="text-3xl font-extrabold text-slate-800">{trackingData.id}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-slate-500 font-medium uppercase">{t('Est. Completion', lang)}</p>
-                <p className="text-xl font-bold text-orange-600">{trackingData.completionDate}</p>
+                <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Est. Completion', lang)}</p>
+                <p className="text-2xl font-bold text-blue-600">{trackingData.completionDate}</p>
               </div>
             </div>
             
-            <div className="relative pt-4">
-              <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-slate-100">
-                <div style={{ width: `${progressPercentage}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-orange-500 transition-all duration-1000"></div>
+            <div className="relative pt-4 pb-8">
+              <div className="relative h-3 mb-6 rounded-full bg-slate-200 shadow-inner">
+                <div style={{ width: `${Math.max(5, progressPercentage)}%` }} className="absolute top-0 left-0 h-full rounded-full shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-1000"></div>
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 -ml-3 w-6 h-6 bg-white border-4 border-cyan-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.8)] transition-all duration-1000 z-10 flex items-center justify-center"
+                  style={{ left: `${Math.max(5, progressPercentage)}%` }}
+                >
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full animate-ping"></div>
+                </div>
               </div>
-              <div className="flex justify-between text-xs font-medium text-slate-500">
+              <div className="flex justify-between text-sm font-medium text-slate-500">
                 {stages.map((stage, idx) => (
-                  <span key={stage} className={idx <= currentStageIndex ? "text-orange-600 font-bold" : ""}>
+                  <span key={stage} className={idx <= currentStageIndex ? "text-blue-600 font-bold" : ""}>
                     {t(stage, lang)}
                   </span>
                 ))}
@@ -995,11 +1012,11 @@ const Tracking = () => {
 const Testimonials = () => {
   const { lang } = useContext(LanguageContext);
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{t('Customer Testimonials', lang)}</h2>
-          <p className="text-lg text-slate-600">{t('See what our industrial clients have to say about our repair services.', lang)}</p>
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6">{t('Customer Testimonials', lang)}</h2>
+          <p className="text-xl text-slate-600">{t('See what our industrial clients have to say about our repair services.', lang)}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -1008,14 +1025,19 @@ const Testimonials = () => {
             { name: "Kittipong T.", company: "Chon Buri Water Works", text: "Excellent pump motor rewinding. The motor runs cooler and more efficiently than before. Highly recommended." },
             { name: "Ariya S.", company: "Pattaya Industrial Estate", text: "Transparent pricing and great communication throughout the repair process. The best motor service in the region." }
           ].map((review, idx) => (
-            <div key={idx} className="bg-slate-50 rounded-xl p-8 border border-slate-100">
-              <div className="flex text-orange-400 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-current" />)}
+            <div key={idx} className="bg-white rounded-3xl p-8 border border-slate-50 shadow-xl shadow-slate-200/50 hover:-translate-y-2 transition-transform duration-300">
+              <div className="flex text-yellow-400 mb-6">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-6 h-6 fill-current" />)}
               </div>
-              <p className="text-slate-700 italic mb-6">"{t(review.text, lang)}"</p>
-              <div>
-                <p className="font-bold text-slate-900">{t(review.name, lang)}</p>
-                <p className="text-sm text-slate-500">{t(review.company, lang)}</p>
+              <p className="text-slate-700 italic mb-8 text-lg leading-relaxed">"{t(review.text, lang)}"</p>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl mr-4">
+                  {review.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-bold text-slate-800">{t(review.name, lang)}</p>
+                  <p className="text-sm text-slate-500">{t(review.company, lang)}</p>
+                </div>
               </div>
             </div>
           ))}
@@ -1040,35 +1062,38 @@ const Gallery = () => {
   const displayedImages = showAll ? images : images.slice(0, 4);
 
   return (
-    <section className="py-20 bg-slate-900" id="gallery">
+    <section className="py-24 bg-slate-900 relative" id="gallery">
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-12">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('Workshop Gallery', lang)}</h2>
-            <p className="text-lg text-slate-400">{t('A glimpse into our professional repair facility.', lang)}</p>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 mb-4">{t('Workshop Gallery', lang)}</h2>
+            <p className="text-xl text-slate-300 font-light">{t('A glimpse into our professional repair facility.', lang)}</p>
           </div>
-          <button onClick={() => setShowAll(!showAll)} className="hidden sm:flex items-center text-orange-500 hover:text-orange-400 font-medium transition">
-            {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
+          <button onClick={() => setShowAll(!showAll)} className="hidden sm:flex items-center text-blue-400 hover:text-blue-300 font-bold transition-colors">
+            {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-5 h-5 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
           </button>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 transition-all duration-500">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-500">
           {displayedImages.map((img, idx) => (
-            <div key={idx} className="relative group overflow-hidden rounded-lg aspect-video">
+            <div key={idx} className="relative group overflow-hidden rounded-3xl aspect-video shadow-xl shadow-black/40 border border-blue-500/20">
               <img 
                 src={img} 
                 alt={`Gallery image ${idx + 1}`} 
-                className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                className="w-full h-full object-cover transition duration-700 group-hover:scale-110 group-hover:rotate-1"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                <Search className="w-8 h-8 text-white" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-800/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                <div className="bg-white/20 p-3 rounded-full backdrop-blur-md border border-white/30 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <Search className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
           ))}
         </div>
-        <button onClick={() => setShowAll(!showAll)} className="sm:hidden mt-8 w-full flex justify-center items-center text-orange-500 font-medium">
-          {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-4 h-4 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
+        <button onClick={() => setShowAll(!showAll)} className="sm:hidden mt-10 w-full flex justify-center items-center text-blue-400 font-bold text-lg">
+          {showAll ? t('Show Less', lang) : t('View All Photos', lang)} <ArrowRight className={`w-5 h-5 ml-2 transition-transform ${showAll ? '-rotate-90' : 'rotate-90'}`} />
         </button>
       </div>
     </section>
@@ -1086,11 +1111,12 @@ const Blog = () => {
   ];
 
   return (
-    <section id="blog" className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{t('Latest Articles & Tips', lang)}</h2>
-          <p className="text-lg text-slate-600">{t('Stay updated with our latest insights on motor maintenance and repair.', lang)}</p>
+    <section id="blog" className="py-24 bg-white relative">
+      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-50 to-transparent"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6">{t('Latest Articles & Tips', lang)}</h2>
+          <p className="text-xl text-slate-600">{t('Stay updated with our latest insights on motor maintenance and repair.', lang)}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -1100,24 +1126,25 @@ const Blog = () => {
             const category = lang === 'th' && post.category_th ? post.category_th : (t(post.category, lang) || post.category);
             
             return (
-              <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md transition group">
-                <div className="aspect-video overflow-hidden">
+              <div key={idx} className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-50 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 group hover:-translate-y-2 flex flex-col">
+                <div className="aspect-video overflow-hidden relative">
                   <img 
                     src={post.image || post.img} 
                     alt={title} 
-                    className="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                    className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-800/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm text-orange-500 font-medium">{post.date}</p>
-                    {category && <span className="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded">{category}</span>}
+                <div className="p-8 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-blue-500 font-bold uppercase tracking-wider">{post.date}</p>
+                    {category && <span className="text-xs font-bold bg-slate-50 text-blue-600 px-3 py-1.5 rounded-full">{category}</span>}
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">{title}</h3>
-                  {desc && <p className="text-slate-600 mb-4 line-clamp-2">{desc}</p>}
-                  <button onClick={() => setSelectedPost(post)} className="text-slate-600 font-medium flex items-center hover:text-slate-900 transition">
-                    {t('Read More', lang)} <ArrowRight className="w-4 h-4 ml-1" />
+                  <h3 className="text-2xl font-bold text-slate-800 mb-4 group-hover:text-blue-600 transition-colors">{title}</h3>
+                  {desc && <p className="text-slate-600 mb-8 line-clamp-3 leading-relaxed flex-grow">{desc}</p>}
+                  <button onClick={() => setSelectedPost(post)} className="text-blue-600 font-bold flex items-center hover:text-pink-700 transition-colors group/btn mt-auto">
+                    {t('Read More', lang)} <ArrowRight className="w-5 h-5 ml-1 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </div>
@@ -1214,47 +1241,47 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="py-24 bg-slate-50 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">{t('Contact Us', lang)}</h2>
-            <p className="text-lg text-slate-600 mb-8">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6">{t('Contact Us', lang)}</h2>
+            <p className="text-xl text-slate-600 mb-10 leading-relaxed">
               {t('Need immediate assistance or a quotation? Reach out to us using the details below or fill out the quick request form.', lang)}
             </p>
             
-            <div className="space-y-6 mb-10">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 mr-4">
-                  <MapPin className="w-6 h-6" />
+            <div className="space-y-8 mb-12">
+              <div className="flex items-start group">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center text-blue-600 mr-6 group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                  <MapPin className="w-7 h-7" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-1">{t('Address', lang)}</h4>
-                  <p className="text-slate-600 whitespace-pre-line">{address}</p>
+                  <h4 className="text-xl font-bold text-slate-800 mb-2">{t('Address', lang)}</h4>
+                  <p className="text-slate-600 whitespace-pre-line text-lg">{address}</p>
                 </div>
               </div>
               
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 mr-4">
-                  <Phone className="w-6 h-6" />
+              <div className="flex items-start group">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center text-blue-600 mr-6 group-hover:from-blue-500 group-hover:to-cyan-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                  <Phone className="w-7 h-7" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-1">{t('Phone', lang)}</h4>
-                  <p className="text-slate-600">{siteContent?.contact?.phone || '+66 94 260 8244'}</p>
+                  <h4 className="text-xl font-bold text-slate-800 mb-2">{t('Phone', lang)}</h4>
+                  <p className="text-slate-600 text-lg">{siteContent?.contact?.phone || '+66 94 260 8244'}</p>
                 </div>
               </div>
               
-              <div className="flex items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-[#00B900]/10 rounded-lg flex items-center justify-center text-[#00B900] mr-4">
-                  <MessageCircle className="w-6 h-6" />
+              <div className="flex items-start group">
+                <div className="flex-shrink-0 w-14 h-14 bg-[#00B900]/10 rounded-2xl flex items-center justify-center text-[#00B900] mr-6 group-hover:bg-[#00B900] group-hover:text-white transition-all duration-300 shadow-sm">
+                  <MessageCircle className="w-7 h-7" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900 mb-1">{t('LINE', lang)}</h4>
-                  <p className="text-slate-600 mb-3">{siteContent?.contact?.line || '@bigmotor'}</p>
+                  <h4 className="text-xl font-bold text-slate-800 mb-2">{t('LINE', lang)}</h4>
+                  <p className="text-slate-600 mb-4 text-lg">{siteContent?.contact?.line || '@bigmotor'}</p>
                   <img 
                     src={siteContent?.contact?.lineQrCode || `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} 
                     alt="LINE QR Code" 
-                    className="w-32 h-32 rounded-md border border-slate-200 p-2 bg-white shadow-sm object-contain"
+                    className="w-36 h-36 rounded-xl border border-slate-200 p-2 bg-white shadow-md object-contain"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -1262,75 +1289,75 @@ const Contact = () => {
             </div>
             
             <div className="flex flex-wrap gap-4">
-              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-md font-bold transition flex items-center">
-                <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}
+              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center shadow-lg text-lg">
+                <Phone className="w-6 h-6 mr-2" /> {t('Call Now', lang)}
               </a>
-              <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="bg-[#00B900] hover:bg-[#009900] text-white px-6 py-3 rounded-md font-bold transition flex items-center">
-                <MessageCircle className="w-5 h-5 mr-2" /> {t('Chat on LINE', lang)}
+              <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="bg-[#00B900] hover:bg-[#009900] text-white px-8 py-4 rounded-xl font-bold transition-all hover:scale-105 flex items-center shadow-lg text-lg">
+                <MessageCircle className="w-6 h-6 mr-2" /> {t('Chat on LINE', lang)}
               </a>
             </div>
           </div>
           
-          <div className="bg-slate-50 p-8 rounded-xl border border-slate-200">
-            <h3 className="text-2xl font-bold text-slate-900 mb-6">{t('Quick Service Request', lang)}</h3>
+          <div className="bg-white p-10 rounded-3xl border border-slate-50 shadow-2xl shadow-slate-200/50">
+            <h3 className="text-3xl font-extrabold text-slate-800 mb-8">{t('Quick Service Request', lang)}</h3>
             {status === 'success' ? (
-              <div className="bg-green-50 border border-green-200 text-green-800 rounded-md p-6 text-center">
-                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                <h4 className="text-lg font-bold mb-1">{t('Request Sent Successfully!', lang)}</h4>
-                <p>{t('We will contact you shortly.', lang)}</p>
+              <div className="bg-green-50 border border-green-200 text-green-800 rounded-2xl p-8 text-center shadow-inner">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <h4 className="text-2xl font-bold mb-2">{t('Request Sent Successfully!', lang)}</h4>
+                <p className="text-lg">{t('We will contact you shortly.', lang)}</p>
               </div>
             ) : (
-              <form className="space-y-4" onSubmit={handleSubmit}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Name / Company', lang)}</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">{t('Name / Company', lang)}</label>
                   <input 
                     type="text" 
                     required 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" 
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Phone', lang)}</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">{t('Phone', lang)}</label>
                     <input 
                       type="tel" 
                       required 
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" 
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('Motor Type', lang)}</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">{t('Motor Type', lang)}</label>
                     <input 
                       type="text" 
                       value={formData.motorType}
                       onChange={(e) => setFormData({...formData, motorType: e.target.value})}
-                      className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500" 
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50" 
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('Issue Description', lang)}</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">{t('Issue Description', lang)}</label>
                   <textarea 
                     rows={4} 
                     required 
                     value={formData.issue}
                     onChange={(e) => setFormData({...formData, issue: e.target.value})}
-                    className="w-full border border-slate-300 rounded-md px-4 py-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none bg-slate-50"
                   ></textarea>
                 </div>
                 <button 
                   type="submit" 
                   disabled={status === 'submitting'}
-                  className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-3 px-4 rounded-md transition mt-2 flex justify-center items-center"
+                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 disabled:opacity-50 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-500/30 mt-4 flex justify-center items-center text-lg"
                 >
                   {status === 'submitting' ? t('Sending...', lang) : t('Send Request', lang)}
                 </button>
                 {status === 'error' && (
-                  <p className="text-red-500 text-sm mt-2">Failed to send request. Please try again.</p>
+                  <p className="text-red-500 text-sm mt-2 font-medium">Failed to send request. Please try again.</p>
                 )}
               </form>
             )}
@@ -1364,7 +1391,7 @@ const MapSection = () => {
       ></iframe>
       <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
         <a href={mapLinkUrl} target="_blank" rel="noopener noreferrer" className="pointer-events-auto bg-white text-slate-900 px-6 py-3 rounded-md font-bold shadow-lg hover:bg-slate-50 transition border border-slate-200 flex items-center mt-48">
-          <MapPin className="w-5 h-5 mr-2 text-orange-500" /> {mapButtonText}
+          <MapPin className="w-5 h-5 mr-2 text-cyan-500" /> {mapButtonText}
         </a>
       </div>
     </section>
@@ -1379,46 +1406,46 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
   const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
 
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-8">
+    <footer className="bg-slate-900 text-slate-300 pt-20 pb-10 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div>
             <div className="flex items-center mb-6">
               {siteContent?.hero?.logo ? (
                 <div className="flex items-center">
-                  <img src={siteContent.hero.logo} alt="Company Logo" className="h-10 object-contain bg-white p-1 rounded mr-3" referrerPolicy="no-referrer" />
-                  <span className="text-2xl font-bold text-white">{companyNameShort}</span>
+                  <img src={siteContent.hero.logo} alt="Company Logo" className="h-12 object-contain bg-white p-1.5 rounded-xl mr-4 shadow-md" referrerPolicy="no-referrer" />
+                  <span className="text-3xl font-extrabold text-white tracking-tight">{companyNameShort}</span>
                 </div>
               ) : (
-                <div className="text-2xl font-bold text-white flex items-center">
-                  <Zap className="w-6 h-6 text-orange-500 mr-2" />
+                <div className="text-3xl font-extrabold text-white flex items-center tracking-tight">
+                  <Zap className="w-8 h-8 text-blue-500 mr-3" />
                   {companyNameShort}
                 </div>
               )}
             </div>
-            <p className="mb-6">{description}</p>
+            <p className="mb-8 leading-relaxed font-light">{description}</p>
             <div className="flex space-x-4">
-              <a href={siteContent?.footer?.facebook || '#'} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-orange-500 hover:text-white transition">
-                <Facebook className="w-5 h-5" />
+              <a href={siteContent?.footer?.facebook || '#'} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all hover:scale-110 shadow-lg">
+                <Facebook className="w-6 h-6" />
               </a>
-              <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#00B900] hover:text-white transition">
-                <MessageCircle className="w-5 h-5" />
+              <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#00B900] hover:text-white transition-all hover:scale-110 shadow-lg">
+                <MessageCircle className="w-6 h-6" />
               </a>
-              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#25D366] hover:text-white transition">
-                <Phone className="w-5 h-5" />
+              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all hover:scale-110 shadow-lg">
+                <Phone className="w-6 h-6" />
               </a>
             </div>
           </div>
           
           <div>
-            <h4 className="text-white font-bold text-lg mb-6">{t('Quick Links', lang)}</h4>
-            <ul className="space-y-3">
+            <h4 className="text-white font-bold text-xl mb-6">{t('Quick Links', lang)}</h4>
+            <ul className="space-y-4">
               {['Home', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((link) => {
                 const sectionId = link.toLowerCase().replace(' ', '-');
                 return (
                 <li key={link}>
-                  <a href={`#${sectionId}`} onClick={(e) => scrollToSectionHelper(e, sectionId)} className="hover:text-orange-500 transition flex items-center">
-                    <ChevronRight className="w-4 h-4 mr-2 text-slate-600" /> {t(link, lang)}
+                  <a href={`#${sectionId}`} onClick={(e) => scrollToSectionHelper(e, sectionId)} className="hover:text-blue-400 transition-colors flex items-center group font-medium">
+                    <ChevronRight className="w-5 h-5 mr-2 text-blue-500 group-hover:text-blue-400 transition-colors" /> {t(link, lang)}
                   </a>
                 </li>
               )})}
@@ -1426,12 +1453,12 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
           </div>
           
           <div>
-            <h4 className="text-white font-bold text-lg mb-6">{t('Our Services', lang)}</h4>
-            <ul className="space-y-3">
+            <h4 className="text-white font-bold text-xl mb-6">{t('Our Services', lang)}</h4>
+            <ul className="space-y-4">
               {['Electric Motor Repair', 'Motor Rewinding', 'Pump Motor Repair', 'Generator Service', 'Industrial Maintenance'].map((link) => (
                 <li key={link}>
-                  <a href="#services" onClick={(e) => scrollToSectionHelper(e, 'services')} className="hover:text-orange-500 transition flex items-center">
-                    <ChevronRight className="w-4 h-4 mr-2 text-slate-600" /> {t(link, lang)}
+                  <a href="#services" onClick={(e) => scrollToSectionHelper(e, 'services')} className="hover:text-blue-400 transition-colors flex items-center group font-medium">
+                    <ChevronRight className="w-5 h-5 mr-2 text-blue-500 group-hover:text-blue-400 transition-colors" /> {t(link, lang)}
                   </a>
                 </li>
               ))}
@@ -1439,34 +1466,34 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
           </div>
           
           <div>
-            <h4 className="text-white font-bold text-lg mb-6">{t('Contact Info', lang)}</h4>
+            <h4 className="text-white font-bold text-xl mb-6">{t('Contact Info', lang)}</h4>
             <ul className="space-y-4">
-              <li className="flex items-start">
-                <MapPin className="w-5 h-5 text-orange-500 mr-3 mt-1 flex-shrink-0" />
-                <span className="whitespace-pre-line">{lang === 'th' && siteContent?.contact?.address_th ? siteContent.contact.address_th : (siteContent?.contact?.address || '21 2, Khao Mai Kaeo, Bang Lamung District, Chon Buri 20150')}</span>
+              <li className="flex items-start group">
+                <MapPin className="w-5 h-5 text-blue-500 mr-3 mt-1 flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                <span className="whitespace-pre-line group-hover:text-slate-200 transition-colors">{lang === 'th' && siteContent?.contact?.address_th ? siteContent.contact.address_th : (siteContent?.contact?.address || '21 2, Khao Mai Kaeo, Bang Lamung District, Chon Buri 20150')}</span>
               </li>
-              <li className="flex items-center">
-                <Phone className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
-                <span>{siteContent?.contact?.phone || '+66 94 260 8244'}</span>
+              <li className="flex items-center group">
+                <Phone className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                <span className="group-hover:text-slate-200 transition-colors">{siteContent?.contact?.phone || '+66 94 260 8244'}</span>
               </li>
-              <li className="flex items-center">
-                <Mail className="w-5 h-5 text-orange-500 mr-3 flex-shrink-0" />
-                <span>{siteContent?.contact?.email || 'service@bigmotor.co.th'}</span>
+              <li className="flex items-center group">
+                <Mail className="w-5 h-5 text-blue-500 mr-3 flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                <span className="group-hover:text-slate-200 transition-colors">{siteContent?.contact?.email || 'service@bigmotor.co.th'}</span>
               </li>
-              <li className="flex items-center">
-                <MessageCircle className="w-5 h-5 text-[#00B900] mr-3 flex-shrink-0" />
-                <span>LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
+              <li className="flex items-center group">
+                <MessageCircle className="w-5 h-5 text-[#00B900] mr-3 flex-shrink-0 group-hover:text-[#25D366] transition-colors" />
+                <span className="group-hover:text-slate-200 transition-colors">LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-slate-800/50 pt-8 flex flex-col md:flex-row justify-between items-center text-slate-400">
           <p>&copy; {new Date().getFullYear()} BIG ELECTRICMOTOR SERVICE CO., LTD. {t('All rights reserved.', lang)}</p>
-          <div className="flex space-x-4 mt-4 md:mt-0 text-sm">
-            <a href="#" className="hover:text-white transition">{t('Privacy Policy', lang)}</a>
-            <a href="#" className="hover:text-white transition">{t('Terms of Service', lang)}</a>
-            <button onClick={onOpenAdminLogin} className="hover:text-white transition">{t('Admin Login', lang)}</button>
+          <div className="flex space-x-6 mt-4 md:mt-0 text-sm font-medium">
+            <a href="#" className="hover:text-blue-400 transition-colors">{t('Privacy Policy', lang)}</a>
+            <a href="#" className="hover:text-blue-400 transition-colors">{t('Terms of Service', lang)}</a>
+            <button onClick={onOpenAdminLogin} className="hover:text-blue-400 transition-colors">{t('Admin Login', lang)}</button>
           </div>
         </div>
       </div>
@@ -1477,15 +1504,15 @@ const Footer = ({ onOpenAdminLogin }: { onOpenAdminLogin: () => void }) => {
 const FloatingButtons = () => {
   const siteContent = useContext(SiteContext);
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
-      <a href={`https://wa.me/${siteContent?.contact?.phone?.replace(/\D/g, '') || '66942608244'}`} className="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform" aria-label="WhatsApp">
-        <MessageSquare className="w-7 h-7" />
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-4">
+      <a href={`https://wa.me/${siteContent?.contact?.phone?.replace(/\D/g, '') || '66942608244'}`} className="w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-300 hover:shadow-[#25D366]/50" aria-label="WhatsApp">
+        <MessageSquare className="w-8 h-8" />
       </a>
-      <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="w-14 h-14 bg-[#00B900] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform" aria-label="LINE">
+      <a href={`https://line.me/R/ti/p/~${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-[#00B900] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-300 hover:shadow-[#00B900]/50" aria-label="LINE">
         <MessageCircle className="w-7 h-7" />
       </a>
-      <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="w-14 h-14 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform animate-bounce" aria-label="Call">
-        <Phone className="w-7 h-7" />
+      <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-300 hover:shadow-blue-500/50 animate-bounce" aria-label="Call">
+        <Phone className="w-8 h-8" />
       </a>
     </div>
   );
@@ -1516,35 +1543,35 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div className="bg-slate-900 p-6 flex justify-between items-center text-white">
-          <h3 className="text-xl font-bold flex items-center">
-            <Zap className="w-5 h-5 text-orange-500 mr-2" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+        <div className="bg-gradient-to-r from-blue-800 to-cyan-700 p-6 flex justify-between items-center text-white">
+          <h3 className="text-xl font-extrabold flex items-center">
+            <Zap className="w-6 h-6 text-blue-400 mr-2" />
             {t('Admin Login', lang)}
           </h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition">
+          <button onClick={onClose} className="text-slate-300 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
             <X className="w-6 h-6" />
           </button>
         </div>
-        <div className="p-6">
-          <form onSubmit={handleLogin} className="space-y-4">
+        <div className="p-8">
+          <form onSubmit={handleLogin} className="space-y-6">
             {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
                 {error}
               </div>
             )}
             <div className="text-center py-4">
-              <p className="text-slate-600 mb-6">
+              <p className="text-slate-600 mb-8 text-lg">
                 {lang === 'en' ? 'Sign in with your Google account to access the admin panel.' : 'ลงชื่อเข้าใช้ด้วยบัญชี Google ของคุณเพื่อเข้าถึงแผงควบคุม'}
               </p>
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-orange-600 transition flex items-center justify-center disabled:opacity-70"
+                className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] flex items-center justify-center disabled:opacity-70 shadow-lg shadow-blue-500/30 text-lg"
               >
                 {loading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                 ) : (
                   lang === 'en' ? 'Sign in with Google' : 'ลงชื่อเข้าใช้ด้วย Google'
                 )}
@@ -1598,7 +1625,7 @@ export default function App() {
 
   if (loading || !authInitialized) {
     return <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
     </div>;
   }
 
@@ -1618,7 +1645,7 @@ export default function App() {
   return (
     <LanguageContext.Provider value={{lang, setLang}}>
       <SiteContext.Provider value={siteContent}>
-        <div className="min-h-screen bg-white font-sans selection:bg-orange-500 selection:text-white scroll-smooth">
+        <div className="min-h-screen bg-white font-sans selection:bg-cyan-500 selection:text-white scroll-smooth">
           <Header />
           <main>
             <Hero />
