@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, LogOut, Plus, Trash2, Home } from 'lucide-react';
+import { Save, LogOut, Plus, Trash2, Home, ShieldCheck } from 'lucide-react';
 import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -86,41 +86,29 @@ export default function Admin() {
     <div className="min-h-screen bg-slate-50 p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
         <div className="bg-slate-900 text-white p-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Site Administration</h1>
-          <div className="flex space-x-4">
-            <button onClick={() => navigate('/')} className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded flex items-center font-medium transition">
-              <Home className="w-4 h-4 mr-2" /> View Site
-            </button>
-            <button onClick={handleSave} disabled={saving} className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded flex items-center font-medium transition">
-              <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-            <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded flex items-center font-medium transition">
-              <LogOut className="w-4 h-4 mr-2" /> Logout
-            </button>
+          <div className="flex items-center">
+            <ShieldCheck className="w-8 h-8 text-cyan-400 mr-3" />
+            <h1 className="text-2xl font-bold tracking-tight">Site Administration</h1>
           </div>
-        </div>
-        
-        <div className="bg-slate-900 text-white p-6 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Site Administration</h1>
-          <div className="flex space-x-4">
-            <button onClick={() => navigate('/')} className="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded flex items-center font-medium transition">
-              <Home className="w-4 h-4 mr-2" /> View Site
+          <div className="flex space-x-3">
+            <button onClick={() => navigate('/')} className="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg flex items-center font-bold text-sm transition-all border border-slate-700">
+              <Home className="w-4 h-4 mr-2 text-slate-400" /> View Site
             </button>
-            <button onClick={handleSave} disabled={saving} className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded flex items-center font-medium transition">
+            <button onClick={handleSave} disabled={saving} className="bg-cyan-500 hover:bg-cyan-600 px-5 py-2 rounded-lg flex items-center font-bold text-sm transition-all shadow-lg shadow-cyan-500/20 active:scale-95">
               <Save className="w-4 h-4 mr-2" /> {saving ? 'Saving...' : 'Save Changes'}
             </button>
-            <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded flex items-center font-medium transition">
+            <button onClick={handleLogout} className="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-4 py-2 rounded-lg flex items-center font-bold text-sm transition-all border border-red-500/20">
               <LogOut className="w-4 h-4 mr-2" /> Logout
             </button>
           </div>
         </div>
 
-        <div className="flex border-b border-slate-200 bg-slate-50">
+        <div className="flex border-b border-slate-200 bg-slate-50/50 overflow-x-auto scrollbar-hide">
           {[
             { id: 'site', label: 'Site Content' },
             { id: 'clients', label: 'Clients' },
             { id: 'projects', label: 'Projects' },
-            { id: 'tracking', label: 'Repair Tracking' },
+            { id: 'customer-portal', label: 'Customer Portal' },
             { id: 'pricing', label: 'Pricing' }
           ].map(tab => (
             <button
@@ -341,7 +329,7 @@ export default function Admin() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 uppercase">Status</label>
+                        <label className="block text-xs font-medium text-slate-500 uppercase">Project Status</label>
                         <select value={project.status} onChange={e => {
                           const newProjects = [...content.projects];
                           newProjects[index].status = e.target.value;
@@ -353,6 +341,30 @@ export default function Admin() {
                           <option>Cancelled</option>
                         </select>
                       </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 uppercase">Payment Status</label>
+                        <select value={project.paymentStatus || 'Unpaid'} onChange={e => {
+                          const newProjects = [...content.projects];
+                          newProjects[index].paymentStatus = e.target.value;
+                          setContent({...content, projects: newProjects});
+                        }} className={`w-full border rounded px-2 py-1 text-sm font-bold ${
+                          project.paymentStatus === 'Paid' ? 'text-emerald-600 bg-emerald-50' : 
+                          project.paymentStatus === 'Partial' ? 'text-orange-600 bg-orange-50' : 
+                          'text-red-600 bg-red-50'
+                        }`}>
+                          <option value="Unpaid">Unpaid</option>
+                          <option value="Partial">Partial</option>
+                          <option value="Paid">Paid</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 uppercase">Start Date</label>
+                        <input type="date" value={project.startDate} onChange={e => {
+                          const newProjects = [...content.projects];
+                          newProjects[index].startDate = e.target.value;
+                          setContent({...content, projects: newProjects});
+                        }} className="w-full border rounded px-2 py-1 text-sm" />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -360,60 +372,106 @@ export default function Admin() {
             </div>
           )}
 
-          {activeTab === 'tracking' && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center border-b pb-2">
-                <h2 className="text-xl font-bold">Repair Tracking</h2>
-                <button onClick={() => {
-                  const id = prompt('Enter new Tracking ID (e.g. EMS-000123):');
-                  if (id) {
-                    setContent({...content, trackingIds: [...(content.trackingIds || []), { 
-                      id, 
+          {activeTab === 'customer-portal' && (
+            <div className="space-y-10">
+              {/* Portal Settings */}
+              <section className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <div className="flex items-center mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500 flex items-center justify-center mr-4 shadow-lg shadow-cyan-500/20">
+                    <ShieldCheck className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Portal Configuration</h2>
+                    <p className="text-sm text-slate-500">Manage how your customers see the service portal</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Portal Title (English)</label>
+                    <input type="text" value={content.portal?.title || 'Customer Service Portal'} onChange={e => setContent({...content, portal: {...content.portal, title: e.target.value}})} className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Portal Title (Thai)</label>
+                    <input type="text" value={content.portal?.title_th || 'พอร์ทัลบริการลูกค้า'} onChange={e => setContent({...content, portal: {...content.portal, title_th: e.target.value}})} className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all outline-none" />
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-slate-200">
+                  <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center">
+                    <Plus className="w-4 h-4 mr-2 text-cyan-500" /> Portal Preview & Testing
+                  </h3>
+                  <div className="bg-slate-900 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-4">
+                    <div className="flex-grow w-full">
+                      <input 
+                        type="text" 
+                        placeholder="Enter a Tracking ID to test..." 
+                        className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-cyan-500 transition-all"
+                        id="portal-test-id"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => {
+                        const id = (document.getElementById('portal-test-id') as HTMLInputElement).value;
+                        if (id) window.open(`/#customer-portal`, '_blank');
+                      }}
+                      className="w-full md:w-auto bg-white text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-cyan-500 hover:text-white transition-all active:scale-95"
+                    >
+                      Test Portal View
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              {/* Tracking IDs Management */}
+              <section>
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900">Repair Tracking IDs</h2>
+                    <p className="text-sm text-slate-500">Manage customer tracking codes and linked documents</p>
+                  </div>
+                  <button onClick={() => {
+                    const newTrackingIds = [...(content.trackingIds || []), { 
+                      id: `TRK-${Math.random().toString(36).substr(2, 6).toUpperCase()}`, 
                       status: 'Received', 
                       completionDate: 'TBD',
+                      paymentStatus: 'Unpaid',
                       clientId: '',
-                      paymentStatus: 'Pending',
-                      docs: { report: '', invoice: '', document: '', drawing: '', other: '' }
-                    }]});
-                  }
-                }} className="text-cyan-500 hover:text-cyan-600 flex items-center text-sm font-medium">
-                  <Plus className="w-4 h-4 mr-1" /> Add Tracking ID
-                </button>
-              </div>
-              <div className="space-y-6">
-                {(() => {
-                  const trackingIds = content.trackingIds || [];
-                  const idCounts = trackingIds.reduce((acc: any, curr: any) => {
-                    acc[curr.id] = (acc[curr.id] || 0) + 1;
-                    return acc;
-                  }, {});
+                      docs: {}
+                    }];
+                    setContent({...content, trackingIds: newTrackingIds});
+                  }} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold flex items-center hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-95">
+                    <Plus className="w-5 h-5 mr-2" /> Add New Tracking ID
+                  </button>
+                </div>
 
-                  return trackingIds.map((data: any, index: number) => {
-                    const isDuplicate = idCounts[data.id] > 1;
+                <div className="space-y-6">
+                  {(content.trackingIds || []).map((data: any, index: number) => {
+                    const isDuplicate = content.trackingIds.filter((t: any) => t.id === data.id).length > 1;
                     return (
-                      <div key={`${data.id}-${index}`} className={`p-6 rounded border space-y-4 ${isDuplicate ? 'bg-red-50 border-red-300' : 'bg-slate-50'}`}>
-                        <div className="flex justify-between items-start">
-                          <div className="w-1/3">
-                            <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Tracking ID</label>
+                      <div key={index} className={`bg-white border rounded-2xl p-6 shadow-sm transition-all hover:shadow-md ${isDuplicate ? 'border-red-200 bg-red-50/30' : 'border-slate-200'}`}>
+                        <div className="flex items-center mb-6 pb-6 border-b border-slate-100">
+                          <div className="flex-grow pr-4">
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Tracking ID</label>
                             <input 
                               type="text" 
                               value={data.id} 
                               onChange={e => {
                                 const newTrackingIds = [...content.trackingIds];
-                                newTrackingIds[index].id = e.target.value;
+                                newTrackingIds[index].id = e.target.value.toUpperCase();
                                 setContent({...content, trackingIds: newTrackingIds});
                               }} 
-                              className={`w-full border rounded px-3 py-2 font-bold ${isDuplicate ? 'border-red-300 bg-white' : 'bg-white border-slate-200'}`}
+                              className={`w-full border rounded-xl px-4 py-3 font-black text-lg tracking-wider ${isDuplicate ? 'border-red-300 bg-white text-red-600' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-cyan-500 transition-all outline-none'}`}
                             />
-                            {isDuplicate && <span className="text-xs text-red-500 font-normal mt-1">Duplicate ID. Please correct.</span>}
+                            {isDuplicate && <span className="text-xs text-red-500 font-bold mt-2 block">Warning: This Tracking ID is already in use.</span>}
                           </div>
                           <div className="w-1/3 px-4">
-                            <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Client</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Assign Client</label>
                             <select value={data.clientId} onChange={e => {
                               const newTrackingIds = [...content.trackingIds];
                               newTrackingIds[index].clientId = e.target.value;
                               setContent({...content, trackingIds: newTrackingIds});
-                            }} className="w-full border rounded px-3 py-2 bg-white">
+                            }} className="w-full border border-slate-100 rounded-xl px-4 py-3 bg-slate-50 font-bold text-sm outline-none focus:bg-white focus:border-cyan-500 transition-all">
                               <option value="">Select Client</option>
                               {(content.clients || []).map((c: any) => (
                                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -421,21 +479,23 @@ export default function Admin() {
                             </select>
                           </div>
                           <button onClick={() => {
-                            const newTrackingIds = content.trackingIds.filter((_: any, i: number) => i !== index);
-                            setContent({...content, trackingIds: newTrackingIds});
-                          }} className="text-red-500 hover:text-red-700 p-2">
-                            <Trash2 className="w-5 h-5" />
+                            if (confirm('Are you sure you want to delete this tracking ID?')) {
+                              const newTrackingIds = content.trackingIds.filter((_: any, i: number) => i !== index);
+                              setContent({...content, trackingIds: newTrackingIds});
+                            }
+                          }} className="text-slate-300 hover:text-red-500 p-3 transition-colors">
+                            <Trash2 className="w-6 h-6" />
                           </button>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                           <div>
-                            <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Repair Status</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Repair Status</label>
                             <select value={data.status} onChange={e => {
                               const newTrackingIds = [...content.trackingIds];
                               newTrackingIds[index].status = e.target.value;
                               setContent({...content, trackingIds: newTrackingIds});
-                            }} className="w-full border rounded px-3 py-2 bg-white">
+                            }} className="w-full border border-slate-100 rounded-xl px-4 py-3 bg-slate-50 font-bold text-sm outline-none focus:bg-white focus:border-cyan-500 transition-all">
                               <option>Received</option>
                               <option>Inspection</option>
                               <option>Rewinding</option>
@@ -445,57 +505,69 @@ export default function Admin() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Est. Completion</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Est. Completion</label>
                             <input type="text" value={data.completionDate} onChange={e => {
                               const newTrackingIds = [...content.trackingIds];
                               newTrackingIds[index].completionDate = e.target.value;
                               setContent({...content, trackingIds: newTrackingIds});
-                            }} placeholder="Est. Completion" className="w-full border rounded px-3 py-2 bg-white" />
+                            }} placeholder="e.g., 2-3 Days" className="w-full border border-slate-100 rounded-xl px-4 py-3 bg-slate-50 font-bold text-sm outline-none focus:bg-white focus:border-cyan-500 transition-all" />
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-slate-500 uppercase mb-1">Payment Status</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Payment Status</label>
                             <select value={data.paymentStatus} onChange={e => {
                               const newTrackingIds = [...content.trackingIds];
                               newTrackingIds[index].paymentStatus = e.target.value;
                               setContent({...content, trackingIds: newTrackingIds});
-                            }} className="w-full border rounded px-3 py-2 bg-white">
-                              <option>Pending</option>
-                              <option>Partial</option>
-                              <option>Paid</option>
+                            }} className={`w-full border rounded-xl px-4 py-3 font-black text-sm outline-none transition-all ${
+                              data.paymentStatus === 'Paid' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 
+                              data.paymentStatus === 'Partial' ? 'text-orange-600 bg-orange-50 border-orange-100' : 
+                              'text-red-600 bg-red-50 border-red-100'
+                            }`}>
+                              <option value="Unpaid">Unpaid</option>
+                              <option value="Partial">Partial</option>
+                              <option value="Paid">Paid</option>
                             </select>
                           </div>
                         </div>
 
-                        <div className="pt-4 border-t border-slate-200">
-                          <h4 className="text-xs font-bold text-slate-400 uppercase mb-3">Documents & Files (URLs)</h4>
-                          <div className="grid grid-cols-2 gap-4">
+                        <div className="pt-6 border-t border-slate-100">
+                          <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest mb-4 flex items-center">
+                            <Plus className="w-3 h-3 mr-2 text-cyan-500" /> External Document Links (Google Drive, etc.)
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {['report', 'invoice', 'document', 'drawing', 'other'].map(docKey => (
-                              <div key={docKey}>
-                                <label className="block text-xs font-medium text-slate-500 uppercase mb-1">{docKey}</label>
-                                <input 
-                                  type="text" 
-                                  value={data.docs?.[docKey] || ''} 
-                                  placeholder={`Link to ${docKey} (Google Drive, etc.)`}
-                                  onChange={e => {
-                                    const newTrackingIds = [...content.trackingIds];
-                                    if (!newTrackingIds[index].docs) newTrackingIds[index].docs = {};
-                                    newTrackingIds[index].docs[docKey] = e.target.value;
-                                    setContent({...content, trackingIds: newTrackingIds});
-                                  }} 
-                                  className="w-full border border-slate-200 rounded px-3 py-1.5 text-sm bg-white" 
-                                />
+                              <div key={docKey} className="group">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{docKey}</label>
+                                <div className="relative">
+                                  <input 
+                                    type="text" 
+                                    value={data.docs?.[docKey] || ''} 
+                                    placeholder={`Paste ${docKey} URL...`}
+                                    onChange={e => {
+                                      const newTrackingIds = [...content.trackingIds];
+                                      if (!newTrackingIds[index].docs) newTrackingIds[index].docs = {};
+                                      newTrackingIds[index].docs[docKey] = e.target.value;
+                                      setContent({...content, trackingIds: newTrackingIds});
+                                    }} 
+                                    className="w-full border border-slate-100 rounded-xl px-4 py-2.5 text-xs bg-slate-50 focus:bg-white focus:border-cyan-500 transition-all outline-none" 
+                                  />
+                                </div>
                               </div>
                             ))}
                           </div>
                         </div>
                       </div>
                     );
-                  });
-                })()}
-                {(!content.trackingIds || content.trackingIds.length === 0) && (
-                  <p className="text-slate-500 italic">No tracking IDs found.</p>
-                )}
-              </div>
+                  })}
+                  {(!content.trackingIds || content.trackingIds.length === 0) && (
+                    <div className="text-center py-20 bg-white border border-dashed border-slate-200 rounded-3xl">
+                      <ShieldCheck className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                      <p className="text-slate-400 font-bold">No Tracking IDs created yet.</p>
+                      <p className="text-slate-300 text-sm">Click the button above to start tracking a repair.</p>
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
           )}
 

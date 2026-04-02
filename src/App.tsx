@@ -24,7 +24,7 @@ const t = (key: string, lang: Language) => {
     'About': { en: 'About', th: 'เกี่ยวกับเรา' },
     'Services': { en: 'Services', th: 'บริการ' },
     'Booking': { en: 'Booking', th: 'จองคิว' },
-    'Repair Status': { en: 'Repair Status', th: 'สถานะการซ่อม' },
+    'Customer Portal': { en: 'Customer Portal', th: 'พอร์ทัลลูกค้า' },
     'Blog': { en: 'Blog', th: 'บทความ' },
     'Contact': { en: 'Contact', th: 'ติดต่อเรา' },
     'Call Now': { en: 'Call Now', th: 'โทรเลย' },
@@ -179,7 +179,7 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['home', 'about', 'services', 'booking', 'repair-status', 'blog', 'contact'];
+      const sections = ['home', 'booking', 'customer-portal', 'contact'];
       let current = 'home';
       
       for (const section of sections) {
@@ -206,26 +206,28 @@ const Header = () => {
   const companyNameShort = siteContent?.hero?.companyNameShort || 'BIG MOTOR';
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-slate-50">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl shadow-sm border-b border-slate-200/50">
       {/* Top Bar */}
-      <div className="bg-gradient-to-r from-slate-900 to-blue-950 text-white py-2 px-4 text-sm hidden md:block">
+      <div className="bg-slate-900 text-white py-2 px-4 text-xs hidden md:block border-b border-white/5">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-6">
-            <span className="flex items-center text-slate-300 hover:text-white transition-colors"><Phone className="w-4 h-4 mr-2 text-blue-400" /> {siteContent?.contact?.phone || '+66 94 260 8244'}</span>
-            <span className="flex items-center text-slate-300 hover:text-white transition-colors"><MessageCircle className="w-4 h-4 mr-2 text-[#00B900]" /> LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
+          <div className="flex items-center space-x-8">
+            <span className="flex items-center text-slate-400 hover:text-white transition-colors cursor-default"><Phone className="w-3.5 h-3.5 mr-2 text-blue-400" /> {siteContent?.contact?.phone || '+66 94 260 8244'}</span>
+            <span className="flex items-center text-slate-400 hover:text-white transition-colors cursor-default"><MessageCircle className="w-3.5 h-3.5 mr-2 text-emerald-400" /> LINE: {siteContent?.contact?.line || '@bigmotor'}</span>
           </div>
-          <div className="flex items-center space-x-3">
-            <Globe className="w-4 h-4 mr-1 text-slate-400" />
-            <div className="flex bg-slate-800/50 rounded-lg p-1 border border-slate-700">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center text-slate-400 text-[10px] font-bold uppercase tracking-widest mr-2">
+              <Globe className="w-3 h-3 mr-1.5" /> Language
+            </div>
+            <div className="flex bg-white/5 rounded-full p-0.5 border border-white/10">
               <button 
                 onClick={() => setLang('en')} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${lang === 'en' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-0.5 text-[10px] font-black rounded-full transition-all ${lang === 'en' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 EN
               </button>
               <button 
                 onClick={() => setLang('th')} 
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${lang === 'th' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-0.5 text-[10px] font-black rounded-full transition-all ${lang === 'th' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
               >
                 TH
               </button>
@@ -258,7 +260,7 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <nav className="hidden lg:flex lg:space-x-4 xl:space-x-8">
-            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
+            {['Home', 'Booking', 'Customer Portal', 'Contact'].map((item) => {
               const sectionId = item.toLowerCase().replace(' ', '-');
               const isActive = activeSection === sectionId;
               return (
@@ -275,11 +277,17 @@ const Header = () => {
           </nav>
 
           {/* CTA Buttons */}
-          <div className="hidden xl:flex items-center space-x-4">
-            <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center text-slate-800 font-bold hover:text-blue-600 transition-colors">
-              <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}
+          <div className="hidden xl:flex items-center space-x-6">
+            <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center text-slate-900 font-bold hover:text-blue-600 transition-colors group">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mr-3 group-hover:bg-blue-50 transition-colors">
+                <Phone className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-400 uppercase tracking-widest leading-none mb-1">Call Us</span>
+                <span className="leading-none">{siteContent?.contact?.phone || '+66 94 260 8244'}</span>
+              </div>
             </a>
-            <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="bg-[#00B900] hover:bg-[#009900] text-white px-6 py-2.5 rounded-full font-bold flex items-center transition-all hover:scale-105 shadow-md shadow-[#00B900]/20">
+            <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-full font-black text-sm flex items-center transition-all hover:scale-105 shadow-xl shadow-emerald-500/20 active:scale-95">
               <MessageCircle className="w-5 h-5 mr-2" /> {t('LINE Chat', lang)}
             </button>
           </div>
@@ -297,7 +305,7 @@ const Header = () => {
       {isMenuOpen && (
         <div className="lg:hidden bg-white border-t border-slate-50 shadow-xl absolute w-full">
           <div className="px-4 pt-4 pb-6 space-y-2">
-            {['Home', 'About', 'Services', 'Booking', 'Repair Status', 'Blog', 'Contact'].map((item) => {
+            {['Home', 'Booking', 'Customer Portal', 'Contact'].map((item) => {
               const sectionId = item.toLowerCase().replace(' ', '-');
               const isActive = activeSection === sectionId;
               return (
@@ -310,29 +318,29 @@ const Header = () => {
                 {t(item, lang)}
               </a>
             )})}
-            <div className="mt-6 flex flex-col space-y-3 border-t border-slate-50 pt-6">
-              <div className="flex items-center justify-between mb-2 px-2">
-                <span className="text-sm font-bold text-slate-800 uppercase tracking-wider">{t('Language', lang)}</span>
-                <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg">
+            <div className="mt-6 flex flex-col space-y-4 border-t border-slate-100 pt-8">
+              <div className="flex items-center justify-between mb-2 px-4">
+                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{t('Language', lang)}</span>
+                <div className="flex space-x-1 bg-slate-100 p-1 rounded-full">
                   <button 
                     onClick={() => setLang('en')} 
-                    className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all ${lang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                    className={`px-6 py-2 text-xs font-black rounded-full transition-all ${lang === 'en' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                   >
                     EN
                   </button>
                   <button 
                     onClick={() => setLang('th')} 
-                    className={`px-4 py-1.5 text-sm font-bold rounded-md transition-all ${lang === 'th' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}
+                    className={`px-6 py-2 text-xs font-black rounded-full transition-all ${lang === 'th' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                   >
                     TH
                   </button>
                 </div>
               </div>
-              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center justify-center w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3.5 rounded-xl font-bold transition-colors shadow-md">
-                <Phone className="w-5 h-5 mr-2" /> {t('Call Now', lang)}: {siteContent?.contact?.phone || '+66 94 260 8244'}
+              <a href={`tel:${siteContent?.contact?.phone?.replace(/\s/g, '') || '+66942608244'}`} className="flex items-center justify-center w-full bg-slate-900 text-white px-6 py-4 rounded-2xl font-black transition-transform active:scale-95 shadow-xl shadow-slate-900/10">
+                <Phone className="w-5 h-5 mr-3 text-blue-400" /> {t('Call Now', lang)}
               </a>
-              <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="flex items-center justify-center w-full bg-[#00B900] hover:bg-[#009900] text-white px-4 py-3.5 rounded-xl font-bold transition-colors shadow-md">
-                <MessageCircle className="w-5 h-5 mr-2" /> {t('LINE Chat', lang)}
+              <button onClick={() => window.open(`https://line.me/R/ti/p/${siteContent?.contact?.line?.replace('@', '') || 'bigmotor'}`, '_blank')} className="flex items-center justify-center w-full bg-emerald-500 text-white px-6 py-4 rounded-2xl font-black transition-transform active:scale-95 shadow-xl shadow-emerald-500/10">
+                <MessageCircle className="w-5 h-5 mr-3" /> {t('LINE Chat', lang)}
               </button>
             </div>
           </div>
@@ -937,14 +945,16 @@ const Tracking = () => {
   const progressPercentage = currentStageIndex >= 0 ? ((currentStageIndex) / (stages.length - 1)) * 100 : 0;
 
   return (
-    <section id="repair-status" className="py-24 bg-gradient-to-br from-blue-500 via-cyan-500 to-slate-800 text-white relative">
+    <section id="customer-portal" className="py-24 bg-gradient-to-br from-blue-500 via-cyan-500 to-slate-800 text-white relative">
       <div className="absolute inset-0 bg-black/10"></div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-8 border border-white/30 shadow-xl">
           <ClipboardList className="w-12 h-12 text-white" />
         </div>
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-6 drop-shadow-md">{t('Track Your Repair Status', lang)}</h2>
-        <p className="text-xl text-white/90 mb-10 font-medium drop-shadow">{t('Enter your Repair Tracking ID to see the current stage of your motor.', lang)}</p>
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-6 drop-shadow-md">
+          {lang === 'th' && siteContent?.portal?.title_th ? siteContent.portal.title_th : (siteContent?.portal?.title || t('Customer Service Portal', lang))}
+        </h2>
+        <p className="text-xl text-white/90 mb-10 font-medium drop-shadow">{t('Track your repair status, download reports, and manage your project documents.', lang)}</p>
         
         <form onSubmit={handleTrack} className="max-w-2xl mx-auto bg-white/20 backdrop-blur-md p-2 rounded-2xl shadow-2xl flex flex-col sm:flex-row border border-white/30">
           <input 
@@ -999,9 +1009,9 @@ const Tracking = () => {
                 <div>
                   <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Payment Status', lang)}</p>
                   <div className="flex items-center md:justify-end text-xl font-bold">
-                    <CreditCard className={`w-5 h-5 mr-2 ${trackingData.paymentStatus === 'Paid' ? 'text-green-500' : 'text-orange-500'}`} />
-                    <span className={trackingData.paymentStatus === 'Paid' ? 'text-green-600' : 'text-orange-600'}>
-                      {t(trackingData.paymentStatus || 'Pending', lang)}
+                    <CreditCard className={`w-5 h-5 mr-2 ${trackingData.paymentStatus === 'Paid' ? 'text-emerald-500' : trackingData.paymentStatus === 'Partial' ? 'text-orange-500' : 'text-red-500'}`} />
+                    <span className={trackingData.paymentStatus === 'Paid' ? 'text-emerald-600' : trackingData.paymentStatus === 'Partial' ? 'text-orange-600' : 'text-red-600'}>
+                      {t(trackingData.paymentStatus || 'Unpaid', lang)}
                     </span>
                   </div>
                 </div>

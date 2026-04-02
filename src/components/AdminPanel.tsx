@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check, Download } from 'lucide-react';
+import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check, Download, ShieldCheck, Zap, ExternalLink, User } from 'lucide-react';
 import { db } from '../firebase';
 import { doc, setDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
 
@@ -178,7 +178,14 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   };
 
   const exportTrackingIds = () => {
-    const data = content?.trackingIds || [];
+    const data = (content?.trackingIds || []).map((t: any) => {
+      const client = (content.clients || []).find((c: any) => c.id === t.clientId);
+      return {
+        ...t,
+        clientName: client ? client.name : 'General Customer',
+        docs: JSON.stringify(t.docs || {})
+      };
+    });
     exportToCSV('tracking_ids_backup.csv', data);
   };
 
@@ -200,7 +207,7 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
     { id: 'blogs', label: 'Blogs', icon: <FileText className="w-4 h-4 mr-2" /> },
     { id: 'workshopGallery', label: 'Workshop Gallery', icon: <Image className="w-4 h-4 mr-2" /> },
-    { id: 'trackingIds', label: 'Tracking IDs', icon: <Activity className="w-4 h-4 mr-2" /> },
+    { id: 'customerPortal', label: 'Customer Portal', icon: <ShieldCheck className="w-4 h-4 mr-2" /> },
     { id: 'serviceRequests', label: 'Service Requests', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
   ];
 
@@ -232,39 +239,59 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
         </div>
       )}
 
-      <header className="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center z-10">
-        <h1 className="text-xl font-bold flex items-center">
-          <span className="text-orange-500 mr-2">⚡</span> BIG MOTOR Admin Panel
-        </h1>
-        <div className="flex items-center space-x-4">
-          <a href="/" target="_blank" className="text-sm text-slate-300 hover:text-white transition">View Live Site</a>
-          <button onClick={onLogout} className="flex items-center text-sm bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-md transition">
-            <LogOut className="w-4 h-4 mr-2" /> Logout
+      <header className="bg-slate-900 border-b border-slate-800 text-white p-4 shadow-lg flex justify-between items-center z-20 sticky top-0">
+        <div className="flex items-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-orange-500/20">
+            <Zap className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-black tracking-tight flex items-center">
+              BIG MOTOR <span className="text-orange-500 ml-2 font-medium text-sm bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">ADMIN</span>
+            </h1>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-0.5">Management System v2.0</p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-6">
+          <a href="/" target="_blank" className="text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center group">
+            <ExternalLink className="w-3.5 h-3.5 mr-2 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            View Live Site
+          </a>
+          <div className="h-8 w-px bg-slate-800"></div>
+          <button onClick={onLogout} className="flex items-center text-xs font-bold bg-slate-800 hover:bg-red-500 text-slate-300 hover:text-white px-4 py-2 rounded-lg transition-all active:scale-95 border border-slate-700 hover:border-red-400">
+            <LogOut className="w-3.5 h-3.5 mr-2" /> Logout
           </button>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar Navigation */}
-        <aside className="w-64 bg-white border-r border-slate-200 overflow-y-auto">
-          <div className="p-4">
-            <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Content Sections</h2>
-            <nav className="space-y-1">
+        <aside className="w-72 bg-white border-r border-slate-200 overflow-y-auto flex flex-col">
+          <div className="p-6 flex-grow">
+            <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 px-3">Content Sections</h2>
+            <nav className="space-y-1.5">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
+                  className={`w-full flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all duration-200 ${
                     activeTab === tab.id 
-                      ? 'bg-orange-50 text-orange-600' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20 translate-x-1' 
+                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                 >
-                  {tab.icon}
+                  <span className={`mr-3 transition-colors ${activeTab === tab.id ? 'text-white' : 'text-slate-400'}`}>
+                    {tab.icon}
+                  </span>
                   {tab.label}
                 </button>
               ))}
             </nav>
+          </div>
+          <div className="p-6 border-t border-slate-100 bg-slate-50/50">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Logged in as</p>
+              <p className="text-xs font-black text-slate-900 truncate">{token}</p>
+            </div>
           </div>
         </aside>
 
@@ -903,94 +930,274 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                 </div>
               )}
 
-              {/* TRACKING IDS SECTION */}
-              {activeTab === 'trackingIds' && (
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium text-slate-900">Tracking IDs</h3>
-                    <button
-                      onClick={exportTrackingIds}
-                      className="flex items-center px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-slate-700 transition text-sm"
-                    >
-                      <Download className="w-4 h-4 mr-2" /> Export to CSV
-                    </button>
-                  </div>
-                  {(() => {
-                    const trackingIds = content.trackingIds || [];
-                    const idCounts = trackingIds.reduce((acc: any, curr: any) => {
-                      if (curr.id) {
-                        acc[curr.id] = (acc[curr.id] || 0) + 1;
-                      }
-                      return acc;
-                    }, {});
+              {/* CUSTOMER PORTAL SECTION */}
+              {activeTab === 'customerPortal' && (
+                <div className="space-y-10">
+                  {/* Portal Configuration */}
+                  <section className="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <div className="flex items-center mb-6">
+                      <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center mr-4 shadow-lg shadow-orange-500/20">
+                        <ShieldCheck className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900">Portal Configuration</h3>
+                        <p className="text-sm text-slate-500">Manage how your customers see the service portal</p>
+                      </div>
+                    </div>
                     
-                    const hasDuplicates = Object.values(idCounts).some((count: any) => count > 1);
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Portal Title (English)</label>
+                        <input type="text" value={content.portal?.title || ''} onChange={e => handleChange('portal', 'title', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Portal Title (Thai)</label>
+                        <input type="text" value={content.portal?.title_th || ''} onChange={e => handleChange('portal', 'title_th', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all" />
+                      </div>
+                    </div>
+                  </section>
+                  
+                  {/* Client Management */}
+                  <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center mr-4 shadow-lg shadow-blue-500/20">
+                          <User className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-slate-900">Client Management</h3>
+                          <p className="text-sm text-slate-500">Manage your industrial clients list</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => addArrayItem('clients', { id: `C-${Math.floor(100 + Math.random() * 899)}`, name: '', contact: '', phone: '', email: '' })}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold text-xs uppercase tracking-wider shadow-lg shadow-blue-500/20"
+                      >
+                        <Plus className="w-4 h-4 mr-2" /> Add New Client
+                      </button>
+                    </div>
 
-                    return (
-                      <>
-                        {hasDuplicates && (
-                          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                            <div className="flex">
-                              <div className="flex-shrink-0">
-                                <AlertCircle className="h-5 w-5 text-red-400" />
-                              </div>
-                              <div className="ml-3">
-                                <p className="text-sm text-red-700 font-medium">
-                                  Duplicate Tracking IDs found! Please correct the highlighted rows below.
-                                </p>
-                              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(content.clients || []).map((client: any, idx: number) => (
+                        <div key={idx} className="p-4 border border-slate-100 rounded-xl bg-slate-50 relative group">
+                          <button 
+                            onClick={() => removeArrayItem('clients', idx)}
+                            className="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition p-1"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="col-span-2">
+                              <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Company / Client Name</label>
+                              <input 
+                                type="text" 
+                                value={client.name || ''} 
+                                onChange={(e) => handleArrayChange('clients', idx, 'name', e.target.value)} 
+                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                placeholder="e.g. Industrial Solutions Co."
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Contact Person</label>
+                              <input 
+                                type="text" 
+                                value={client.contact || ''} 
+                                onChange={(e) => handleArrayChange('clients', idx, 'contact', e.target.value)} 
+                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                placeholder="John Smith"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Phone</label>
+                              <input 
+                                type="text" 
+                                value={client.phone || ''} 
+                                onChange={(e) => handleArrayChange('clients', idx, 'phone', e.target.value)} 
+                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                placeholder="081-234-5678"
+                              />
                             </div>
                           </div>
-                        )}
-                        {trackingIds.map((tracking: any, idx: number) => {
-                          const isDuplicate = tracking.id && idCounts[tracking.id] > 1;
-                          return (
-                            <div key={idx} className={`p-4 border ${isDuplicate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-slate-50'} rounded-lg relative group`}>
-                              <button 
-                                onClick={() => removeArrayItem('trackingIds', idx)}
-                                className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
-                                title="Remove Tracking ID"
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </button>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pr-8">
-                                <div>
-                                  <label className={`block text-xs font-medium mb-1 ${isDuplicate ? 'text-red-600' : 'text-slate-500'}`}>Tracking ID</label>
-                                  <input type="text" value={tracking.id || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'id', e.target.value)} className={`w-full border rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500 ${isDuplicate ? 'border-red-300 bg-red-50 text-red-900' : 'border-slate-300'}`} />
-                                  {isDuplicate && <p className="mt-1 text-xs text-red-600">This ID is duplicated.</p>}
+                        </div>
+                      ))}
+                      {(!content.clients || content.clients.length === 0) && (
+                        <div className="col-span-2 text-center py-8 border border-dashed border-slate-200 rounded-xl">
+                          <p className="text-slate-400 text-sm">No clients added yet.</p>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Tracking IDs Management */}
+                  <div className="space-y-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900">Repair Tracking IDs Management</h3>
+                        <p className="text-sm text-slate-500">Manage customer tracking codes and linked documents</p>
+                      </div>
+                      <div className="flex items-center space-x-3 w-full md:w-auto">
+                        <button
+                          onClick={exportTrackingIds}
+                          className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition font-bold text-xs uppercase tracking-wider"
+                        >
+                          <Download className="w-4 h-4 mr-2" /> Export CSV
+                        </button>
+                        <button 
+                          onClick={() => addArrayItem('trackingIds', { id: `EMS-${Math.floor(100000 + Math.random() * 900000)}`, status: 'Received', completionDate: 'TBD', paymentStatus: 'Unpaid', docs: {} })}
+                          className="flex-1 md:flex-none flex items-center justify-center px-4 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-bold text-xs uppercase tracking-wider shadow-lg shadow-orange-500/20"
+                        >
+                          <Plus className="w-4 h-4 mr-2" /> Add New ID
+                        </button>
+                      </div>
+                    </div>
+                    {(() => {
+                      const trackingIds = content.trackingIds || [];
+                      const idCounts = trackingIds.reduce((acc: any, curr: any) => {
+                        if (curr.id) {
+                          acc[curr.id] = (acc[curr.id] || 0) + 1;
+                        }
+                        return acc;
+                      }, {});
+                      
+                      const hasDuplicates = Object.values(idCounts).some((count: any) => count > 1);
+
+                      return (
+                        <>
+                          {hasDuplicates && (
+                            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                              <div className="flex">
+                                <div className="flex-shrink-0">
+                                  <AlertCircle className="h-5 w-5 text-red-400" />
                                 </div>
-                                <div>
-                                  <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
-                                  <select 
-                                    value={tracking.status || ''} 
-                                    onChange={(e) => handleArrayChange('trackingIds', idx, 'status', e.target.value)} 
-                                    className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
-                                  >
-                                    <option value="Received">Received</option>
-                                    <option value="Inspection">Inspection</option>
-                                    <option value="Rewinding">Rewinding</option>
-                                    <option value="Testing">Testing</option>
-                                    <option value="Ready">Ready</option>
-                                    <option value="Delivered">Delivered</option>
-                                  </select>
-                                </div>
-                                <div>
-                                  <label className="block text-xs font-medium text-slate-500 mb-1">Est. Completion Date</label>
-                                  <input type="text" value={tracking.completionDate || ''} onChange={(e) => handleArrayChange('trackingIds', idx, 'completionDate', e.target.value)} className="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-orange-500 focus:border-orange-500" />
+                                <div className="ml-3">
+                                  <p className="text-sm text-red-700 font-medium">
+                                    Duplicate Tracking IDs found! Please correct the highlighted rows below.
+                                  </p>
                                 </div>
                               </div>
                             </div>
-                          );
-                        })}
-                      </>
-                    );
-                  })()}
-                  <button 
-                    onClick={() => addArrayItem('trackingIds', { id: `EMS-${Math.floor(100000 + Math.random() * 900000)}`, status: 'Received', completionDate: 'TBD' })}
-                    className="w-full py-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-500 hover:text-orange-600 hover:border-orange-500 hover:bg-orange-50 transition flex items-center justify-center font-medium"
-                  >
-                    <Plus className="w-5 h-5 mr-2" /> Add New Tracking ID
-                  </button>
+                          )}
+                          {trackingIds.map((tracking: any, idx: number) => {
+                            const isDuplicate = tracking.id && idCounts[tracking.id] > 1;
+                            return (
+                              <div key={idx} className={`p-6 border rounded-xl relative group transition-all ${isDuplicate ? 'border-red-500 bg-red-50' : 'border-slate-200 bg-white shadow-sm hover:shadow-md'}`}>
+                                <button 
+                                  onClick={() => removeArrayItem('trackingIds', idx)}
+                                  className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition p-2"
+                                  title="Remove Tracking ID"
+                                >
+                                  <Trash2 className="w-5 h-5" />
+                                </button>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                                  <div className="lg:col-span-1">
+                                    <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${isDuplicate ? 'text-red-600' : 'text-slate-400'}`}>Tracking ID</label>
+                                    <input 
+                                      type="text" 
+                                      value={tracking.id || ''} 
+                                      onChange={(e) => handleArrayChange('trackingIds', idx, 'id', e.target.value.toUpperCase())} 
+                                      className={`w-full border rounded-lg px-4 py-2.5 font-bold focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all ${isDuplicate ? 'border-red-300 bg-white text-red-900' : 'border-slate-200 bg-slate-50'}`} 
+                                    />
+                                    {isDuplicate && <p className="mt-1 text-[10px] text-red-600 font-bold uppercase">Warning: Duplicate ID</p>}
+                                  </div>
+                                  
+                                  <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Assign Client</label>
+                                    <div className="flex gap-2">
+                                      <select 
+                                        value={tracking.clientId || ''} 
+                                        onChange={(e) => handleArrayChange('trackingIds', idx, 'clientId', e.target.value)} 
+                                        className="flex-grow border border-slate-200 rounded-lg px-4 py-2.5 bg-slate-50 font-medium text-sm outline-none focus:bg-white focus:border-orange-500 transition-all"
+                                      >
+                                        <option value="">Select Client</option>
+                                        {(content.clients || []).map((c: any) => (
+                                          <option key={c.id} value={c.id}>{c.name}</option>
+                                        ))}
+                                      </select>
+                                      {tracking.clientId && (
+                                        <div className="flex items-center justify-center px-3 bg-slate-100 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-tighter" title="Client ID">
+                                          {tracking.clientId}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Repair Status</label>
+                                    <select 
+                                      value={tracking.status || ''} 
+                                      onChange={(e) => handleArrayChange('trackingIds', idx, 'status', e.target.value)} 
+                                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 bg-slate-50 font-medium text-sm outline-none focus:bg-white focus:border-orange-500 transition-all"
+                                    >
+                                      <option value="Received">Received</option>
+                                      <option value="Inspection">Inspection</option>
+                                      <option value="Rewinding">Rewinding</option>
+                                      <option value="Testing">Testing</option>
+                                      <option value="Ready">Ready</option>
+                                      <option value="Delivered">Delivered</option>
+                                    </select>
+                                  </div>
+
+                                  <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Est. Completion</label>
+                                    <input 
+                                      type="text" 
+                                      value={tracking.completionDate || ''} 
+                                      onChange={(e) => handleArrayChange('trackingIds', idx, 'completionDate', e.target.value)} 
+                                      placeholder="e.g., 2-3 Days"
+                                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 bg-slate-50 font-medium text-sm outline-none focus:bg-white focus:border-orange-500 transition-all" 
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100">
+                                  <div>
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Payment Status</label>
+                                    <select 
+                                      value={tracking.paymentStatus || 'Unpaid'} 
+                                      onChange={(e) => handleArrayChange('trackingIds', idx, 'paymentStatus', e.target.value)} 
+                                      className={`w-full border rounded-lg px-4 py-2.5 font-bold text-sm outline-none transition-all ${
+                                        tracking.paymentStatus === 'Paid' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 
+                                        tracking.paymentStatus === 'Partial' ? 'text-orange-600 bg-orange-50 border-orange-100' : 
+                                        'text-red-600 bg-red-50 border-red-100'
+                                      }`}
+                                    >
+                                      <option value="Unpaid">Unpaid</option>
+                                      <option value="Partial">Partial</option>
+                                      <option value="Paid">Paid</option>
+                                    </select>
+                                  </div>
+
+                                  <div className="space-y-4">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">External Document Links</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      {['report', 'invoice', 'document', 'drawing', 'other'].map(docKey => (
+                                        <div key={docKey}>
+                                          <input 
+                                            type="text" 
+                                            value={tracking.docs?.[docKey] || ''} 
+                                            placeholder={`${docKey.charAt(0).toUpperCase() + docKey.slice(1)} URL...`}
+                                            onChange={e => {
+                                              const newTrackingIds = [...content.trackingIds];
+                                              if (!newTrackingIds[idx].docs) newTrackingIds[idx].docs = {};
+                                              newTrackingIds[idx].docs[docKey] = e.target.value;
+                                              setContent({...content, trackingIds: newTrackingIds});
+                                            }} 
+                                            className="w-full border border-slate-100 rounded-lg px-3 py-2 text-xs bg-slate-50 focus:bg-white focus:border-orange-500 transition-all outline-none" 
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </>
+                      );
+                    })()}
+                    <div className="h-4"></div>
+                  </div>
                 </div>
               )}
 

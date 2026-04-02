@@ -195,5 +195,9 @@ export const defaultContent = {
     "https://picsum.photos/seed/workshop6/800/600",
     "https://picsum.photos/seed/workshop7/800/600",
     "https://picsum.photos/seed/workshop8/800/600"
-  ]
+  ],
+  portal: {
+    title: "Customer Service Portal",
+    title_th: "พอร์ทัลบริการลูกค้า"
+  }
 };
