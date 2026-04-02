@@ -163,7 +163,28 @@ export const defaultContent = {
     }
   ],
   trackingIds: [
-    { id: "EMS-000245", status: "Rewinding", completionDate: "Oct 24, 2026" }
+    { 
+      id: "EMS-000245", 
+      status: "Rewinding", 
+      completionDate: "Oct 24, 2026",
+      clientId: "C-001",
+      paymentStatus: "Pending",
+      docs: {
+        report: "https://docs.google.com/document/d/example-report",
+        invoice: "https://docs.google.com/document/d/example-invoice",
+        document: "",
+        drawing: "",
+        other: ""
+      }
+    }
+  ],
+  clients: [
+    { id: "C-001", name: "Industrial Solutions Co.", contact: "John Smith", phone: "081-234-5678", email: "john@industrialsolutions.com" },
+    { id: "C-002", name: "Pattaya Manufacturing", contact: "Somchai Jaidee", phone: "089-876-5432", email: "somchai@pattayamfg.com" }
+  ],
+  projects: [
+    { id: "P-001", name: "Main Stator Rewinding", clientId: "C-001", status: "In Progress", startDate: "2026-10-01" },
+    { id: "P-002", name: "Emergency Pump Repair", clientId: "C-002", status: "Completed", startDate: "2026-09-15" }
   ],
   workshopGallery: [
     "https://picsum.photos/seed/workshop1/800/600",

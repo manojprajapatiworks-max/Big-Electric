@@ -4,7 +4,8 @@ import {
   Wrench, Zap, Settings, Activity, ShieldCheck, Clock,
   ThumbsUp, CheckCircle, Search, MapPin, Mail, Facebook,
   ArrowRight, Star, Factory, Cpu, PenTool,
-  Truck, ClipboardList, MessageSquare, Check, Calendar, Tag
+  Truck, ClipboardList, MessageSquare, Check, Calendar, Tag,
+  Download, FileText, CreditCard, User, ExternalLink
 } from 'lucide-react';
 import AdminPanel from './components/AdminPanel';
 import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
@@ -973,18 +974,41 @@ const Tracking = () => {
 
         {status === 'found' && trackingData && (
           <div className="mt-10 bg-white/95 backdrop-blur-sm text-slate-900 rounded-3xl p-8 text-left shadow-2xl animate-in fade-in slide-in-from-bottom-4 border border-white/50">
-            <div className="flex justify-between items-center mb-8 border-b border-slate-200 pb-6">
-              <div>
-                <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Tracking ID', lang)}</p>
-                <p className="text-3xl font-extrabold text-slate-800">{trackingData.id}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border-b border-slate-200 pb-6">
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Tracking ID', lang)}</p>
+                  <p className="text-3xl font-extrabold text-slate-800">{trackingData.id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Client Name', lang)}</p>
+                  <div className="flex items-center text-xl font-bold text-slate-700">
+                    <User className="w-5 h-5 mr-2 text-blue-500" />
+                    {(() => {
+                      const client = (siteContent?.clients || []).find((c: any) => c.id === trackingData.clientId);
+                      return client ? client.name : t('General Customer', lang);
+                    })()}
+                  </div>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Est. Completion', lang)}</p>
-                <p className="text-2xl font-bold text-blue-600">{trackingData.completionDate}</p>
+              <div className="space-y-4 md:text-right">
+                <div>
+                  <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Est. Completion', lang)}</p>
+                  <p className="text-2xl font-bold text-blue-600">{trackingData.completionDate}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-bold uppercase tracking-wider mb-1">{t('Payment Status', lang)}</p>
+                  <div className="flex items-center md:justify-end text-xl font-bold">
+                    <CreditCard className={`w-5 h-5 mr-2 ${trackingData.paymentStatus === 'Paid' ? 'text-green-500' : 'text-orange-500'}`} />
+                    <span className={trackingData.paymentStatus === 'Paid' ? 'text-green-600' : 'text-orange-600'}>
+                      {t(trackingData.paymentStatus || 'Pending', lang)}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             
-            <div className="relative pt-4 pb-8">
+            <div className="relative pt-4 pb-12">
               <div className="relative h-3 mb-6 rounded-full bg-slate-200 shadow-inner">
                 <div style={{ width: `${Math.max(5, progressPercentage)}%` }} className="absolute top-0 left-0 h-full rounded-full shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-1000"></div>
                 <div 
@@ -994,12 +1018,52 @@ const Tracking = () => {
                   <div className="w-2 h-2 bg-cyan-500 rounded-full animate-ping"></div>
                 </div>
               </div>
-              <div className="flex justify-between text-sm font-medium text-slate-500">
+              <div className="flex justify-between text-xs md:text-sm font-medium text-slate-500">
                 {stages.map((stage, idx) => (
                   <span key={stage} className={idx <= currentStageIndex ? "text-blue-600 font-bold" : ""}>
                     {t(stage, lang)}
                   </span>
                 ))}
+              </div>
+            </div>
+
+            {/* Documents Section */}
+            <div className="mt-4 pt-6 border-t border-slate-200">
+              <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                <FileText className="w-5 h-5 mr-2 text-blue-500" />
+                {t('Project Documents & Reports', lang)}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { key: 'report', label: 'Service Report' },
+                  { key: 'invoice', label: 'Invoice' },
+                  { key: 'document', label: 'Technical Document' },
+                  { key: 'drawing', label: 'Motor Drawing' },
+                  { key: 'other', label: 'Other Files' }
+                ].map(doc => {
+                  const url = trackingData.docs?.[doc.key];
+                  if (!url) return null;
+                  return (
+                    <a 
+                      key={doc.key}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-4 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-2xl transition-all group"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mr-3 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <span className="font-bold text-slate-700 group-hover:text-blue-700">{t(doc.label, lang)}</span>
+                      </div>
+                      <Download className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                    </a>
+                  );
+                })}
+                {(!trackingData.docs || Object.values(trackingData.docs).every(v => !v)) && (
+                  <p className="text-slate-400 italic text-sm col-span-full">{t('No documents available yet.', lang)}</p>
+                )}
               </div>
             </div>
           </div>
