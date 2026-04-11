@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check, Download, ShieldCheck, Zap, ExternalLink, User } from 'lucide-react';
-import { db } from '../firebase';
-import { doc, setDoc, collection, onSnapshot, deleteDoc } from 'firebase/firestore';
+import { Save, LogOut, CheckCircle, AlertCircle, LayoutTemplate, BarChart, Phone, LayoutPanelTop, Wrench, FileText, Activity, Plus, Trash2, Image, MessageSquare, Check, Download, ShieldCheck, Zap, ExternalLink, User, Users, Lock, Mail, Key } from 'lucide-react';
+import { db, createAdminAccount } from '../firebase';
+import { doc, setDoc, collection, onSnapshot, deleteDoc, getDocs } from 'firebase/firestore';
 
 export default function AdminPanel({ token, onLogout, siteContent, onUpdateContent }: { token: string, onLogout: () => void, siteContent: any, onUpdateContent: (content: any) => void }) {
   const [content, setContent] = useState<any>(null);
@@ -9,6 +9,10 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
   const [errorMessage, setErrorMessage] = useState('');
   const [activeTab, setActiveTab] = useState('hero');
   const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [admins, setAdmins] = useState<any[]>([]);
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [newAdminPassword, setNewAdminPassword] = useState('');
+  const [adminActionLoading, setAdminActionLoading] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{isOpen: boolean, title: string, message: string, onConfirm: () => void}>({
     isOpen: false,
     title: '',
@@ -30,6 +34,18 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
         setServiceRequests(requests);
       }, (error) => {
         console.error('Failed to fetch service requests', error);
+      });
+      return () => unsub();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'manageAdmins') {
+      const unsub = onSnapshot(collection(db, 'admins'), (snapshot) => {
+        const adminList = snapshot.docs.map(doc => ({ email: doc.id, ...doc.data() }));
+        setAdmins(adminList);
+      }, (error) => {
+        console.error('Failed to fetch admins', error);
       });
       return () => unsub();
     }
@@ -209,7 +225,58 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
     { id: 'workshopGallery', label: 'Workshop Gallery', icon: <Image className="w-4 h-4 mr-2" /> },
     { id: 'customerPortal', label: 'Customer Portal', icon: <ShieldCheck className="w-4 h-4 mr-2" /> },
     { id: 'serviceRequests', label: 'Service Requests', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
+    { id: 'manageAdmins', label: 'Manage Admins', icon: <Users className="w-4 h-4 mr-2" /> },
   ];
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAdminEmail || !newAdminPassword) return;
+    
+    setAdminActionLoading(true);
+    try {
+      // 1. Create the account in Firebase Auth
+      // Note: This might sign out the current user if not careful.
+      // But we'll use the helper from firebase.ts which we'll need to fix to use a secondary app.
+      await createAdminAccount(newAdminEmail, newAdminPassword);
+      
+      // 2. Add to the 'admins' collection
+      await setDoc(doc(db, 'admins', newAdminEmail.toLowerCase()), {
+        email: newAdminEmail.toLowerCase(),
+        createdAt: new Date().toISOString(),
+        addedBy: token // uid of current admin
+      });
+      
+      setNewAdminEmail('');
+      setNewAdminPassword('');
+      setStatus('success');
+      setTimeout(() => setStatus('idle'), 3000);
+    } catch (err: any) {
+      console.error("Error adding admin:", err);
+      setErrorMessage(err.message || "Failed to add admin.");
+      setStatus('error');
+    } finally {
+      setAdminActionLoading(false);
+    }
+  };
+
+  const handleRemoveAdmin = async (email: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Remove Admin',
+      message: `Are you sure you want to remove ${email} from the admin list? They will no longer be able to access this panel.`,
+      onConfirm: async () => {
+        try {
+          await deleteDoc(doc(db, 'admins', email.toLowerCase()));
+          setStatus('success');
+          setTimeout(() => setStatus('idle'), 3000);
+        } catch (err: any) {
+          console.error("Error removing admin:", err);
+          setErrorMessage(err.message || "Failed to remove admin.");
+          setStatus('error');
+        }
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -1256,6 +1323,107 @@ export default function AdminPanel({ token, onLogout, siteContent, onUpdateConte
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* MANAGE ADMINS SECTION */}
+              {activeTab === 'manageAdmins' && (
+                <div className="space-y-8">
+                  <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center">
+                      <Plus className="w-5 h-5 mr-2 text-blue-500" />
+                      Add New Admin
+                    </h3>
+                    <form onSubmit={handleAddAdmin} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                          <input 
+                            type="email" 
+                            required
+                            value={newAdminEmail}
+                            onChange={(e) => setNewAdminEmail(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-blue-500 outline-none transition-all"
+                            placeholder="admin@example.com"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Initial Password</label>
+                        <div className="relative">
+                          <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                          <input 
+                            type="password" 
+                            required
+                            value={newAdminPassword}
+                            onChange={(e) => setNewAdminPassword(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:border-blue-500 outline-none transition-all"
+                            placeholder="••••••••"
+                          />
+                        </div>
+                      </div>
+                      <button 
+                        type="submit"
+                        disabled={adminActionLoading}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-all flex items-center justify-center disabled:opacity-50 h-[42px]"
+                      >
+                        {adminActionLoading ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div> : 'Create Admin'}
+                      </button>
+                    </form>
+                    <p className="mt-4 text-xs text-slate-500 italic">
+                      * Note: Creating a new account will add the email to the authorized whitelist and create a Firebase Auth user.
+                    </p>
+                  </div>
+
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                      <h3 className="text-lg font-bold text-slate-900 flex items-center">
+                        <Users className="w-5 h-5 mr-2 text-blue-500" />
+                        Authorized Admins
+                      </h3>
+                      <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">
+                        {admins.length} Total
+                      </span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                            <th className="px-6 py-4">Admin Email</th>
+                            <th className="px-6 py-4">Added On</th>
+                            <th className="px-6 py-4 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {admins.map((admin) => (
+                            <tr key={admin.email} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center">
+                                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3">
+                                    {admin.email.charAt(0).toUpperCase()}
+                                  </div>
+                                  <span className="text-sm font-medium text-slate-700">{admin.email}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-slate-500">
+                                {admin.createdAt ? new Date(admin.createdAt).toLocaleDateString() : 'N/A'}
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button 
+                                  onClick={() => handleRemoveAdmin(admin.email)}
+                                  className="text-slate-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50"
+                                  title="Remove Admin"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               )}
 

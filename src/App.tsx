@@ -8,7 +8,7 @@ import {
   Download, FileText, CreditCard, User, ExternalLink
 } from 'lucide-react';
 import AdminPanel from './components/AdminPanel';
-import { db, auth, loginWithGoogle, logout, handleFirestoreError, OperationType } from './firebase';
+import { db, auth, loginWithGoogle, loginWithEmail, logout, handleFirestoreError, OperationType } from './firebase';
 import { doc, getDoc, setDoc, collection, addDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { defaultContent } from './defaultContent';
@@ -1596,21 +1596,52 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
   const { lang } = useContext(LanguageContext);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<'google' | 'email'>('google');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   if (!isOpen) return null;
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
-    
     try {
       const user = await loginWithGoogle();
+      // Check if user is admin
+      const adminDoc = await getDoc(doc(db, 'admins', user.email || ''));
+      const isFallbackAdmin = user.email === 'manojprajapatiworks@gmail.com';
+      if (!adminDoc.exists() && !isFallbackAdmin) {
+        await logout();
+        throw new Error(lang === 'en' ? 'Access denied. You are not an authorized admin.' : 'ปฏิเสธการเข้าถึง คุณไม่ใช่ผู้ดูแลระบบที่ได้รับอนุญาต');
+      }
       const token = await user.getIdToken();
       onLoginSuccess(token);
       onClose();
-    } catch (err) {
-      setError(lang === 'en' ? 'Login failed. Please try again.' : 'เข้าสู่ระบบล้มเหลว กรุณาลองอีกครั้ง');
+    } catch (err: any) {
+      setError(err.message || (lang === 'en' ? 'Login failed. Please try again.' : 'เข้าสู่ระบบล้มเหลว กรุณาลองอีกครั้ง'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const user = await loginWithEmail(email, password);
+      // Check if user is admin
+      const adminDoc = await getDoc(doc(db, 'admins', user.email || ''));
+      const isFallbackAdmin = user.email === 'manojprajapatiworks@gmail.com';
+      if (!adminDoc.exists() && !isFallbackAdmin) {
+        await logout();
+        throw new Error(lang === 'en' ? 'Access denied. You are not an authorized admin.' : 'ปฏิเสธการเข้าถึง คุณไม่ใช่ผู้ดูแลระบบที่ได้รับอนุญาต');
+      }
+      const token = await user.getIdToken();
+      onLoginSuccess(token);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || (lang === 'en' ? 'Login failed. Please check your credentials.' : 'เข้าสู่ระบบล้มเหลว กรุณาตรวจสอบข้อมูลประจำตัวของคุณ'));
     } finally {
       setLoading(false);
     }
@@ -1629,18 +1660,34 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
           </button>
         </div>
         <div className="p-8">
-          <form onSubmit={handleLogin} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
-                {error}
-              </div>
-            )}
+          <div className="flex mb-6 bg-slate-100 p-1 rounded-xl">
+            <button 
+              onClick={() => setLoginMethod('google')}
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${loginMethod === 'google' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Google
+            </button>
+            <button 
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${loginMethod === 'email' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Email
+            </button>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100 mb-6">
+              {error}
+            </div>
+          )}
+
+          {loginMethod === 'google' ? (
             <div className="text-center py-4">
               <p className="text-slate-600 mb-8 text-lg">
                 {lang === 'en' ? 'Sign in with your Google account to access the admin panel.' : 'ลงชื่อเข้าใช้ด้วยบัญชี Google ของคุณเพื่อเข้าถึงแผงควบคุม'}
               </p>
               <button 
-                type="submit" 
+                onClick={handleGoogleLogin}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] flex items-center justify-center disabled:opacity-70 shadow-lg shadow-blue-500/30 text-lg"
               >
@@ -1651,7 +1698,43 @@ const AdminLoginModal = ({ isOpen, onClose, onLoginSuccess }: { isOpen: boolean,
                 )}
               </button>
             </div>
-          </form>
+          ) : (
+            <form onSubmit={handleEmailLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Email</label>
+                <input 
+                  type="email" 
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Password</label>
+                <input 
+                  type="password" 
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="••••••••"
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-4 px-6 rounded-xl transition-all hover:scale-[1.02] flex items-center justify-center disabled:opacity-70 shadow-lg shadow-blue-500/30 text-lg mt-6"
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                ) : (
+                  lang === 'en' ? 'Sign in with Email' : 'ลงชื่อเข้าใช้ด้วยอีเมล'
+                )}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
@@ -1674,8 +1757,20 @@ export default function App() {
   }, [lang]);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setAdminUser(user);
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Double check admin status on auth change
+        const adminDoc = await getDoc(doc(db, 'admins', user.email || ''));
+        const isFallbackAdmin = user.email === 'manojprajapatiworks@gmail.com';
+        if (adminDoc.exists() || isFallbackAdmin) {
+          setAdminUser(user);
+        } else {
+          setAdminUser(null);
+          if (auth.currentUser) await logout();
+        }
+      } else {
+        setAdminUser(null);
+      }
       setAuthInitialized(true);
     });
     return () => unsubscribeAuth();
